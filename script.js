@@ -1,0 +1,982 @@
+/**
+ * SPENDORA — Student Budget Planner
+ * Professional Fintech Core Logic & State Management
+ */
+
+// =============================================================================
+// STATE & LOCAL STORAGE INITIALIZATION
+// =============================================================================
+
+let budget = Number(localStorage.getItem('budget')) || 15000;
+
+let categories = JSON.parse(localStorage.getItem('categories')) || [
+  { name: 'Food', allocation: 30 },
+  { name: 'Transport', allocation: 20 },
+  { name: 'Shopping', allocation: 20 },
+  { name: 'Study', allocation: 15 },
+  { name: 'Entertainment', allocation: 15 }
+];
+
+let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+// Save state to localStorage
+function saveData() {
+  localStorage.setItem('budget', budget);
+  localStorage.setItem('categories', JSON.stringify(categories));
+  localStorage.setItem('expenses', JSON.stringify(expenses));
+}
+
+// =============================================================================
+// CATEGORY VISUAL METADATA (Icons & Colors)
+// =============================================================================
+
+const CATEGORY_MAP = {
+  'Food': {
+    icon: 'fa-solid fa-utensils',
+    color: '#f97316',
+    bg: 'var(--cat-food-bg)'
+  },
+  'Transport': {
+    icon: 'fa-solid fa-bus-simple',
+    color: '#0ea5e9',
+    bg: 'var(--cat-transport-bg)'
+  },
+  'Shopping': {
+    icon: 'fa-solid fa-bag-shopping',
+    color: '#8b5cf6',
+    bg: 'var(--cat-shopping-bg)'
+  },
+  'Study': {
+    icon: 'fa-solid fa-book-open',
+    color: '#10b981',
+    bg: 'var(--cat-study-bg)'
+  },
+  'Entertainment': {
+    icon: 'fa-solid fa-gamepad',
+    color: '#ec4899',
+    bg: 'var(--cat-entertainment-bg)'
+  }
+};
+
+function getCategoryMeta(categoryName) {
+  if (CATEGORY_MAP[categoryName]) {
+    return CATEGORY_MAP[categoryName];
+  }
+  // Fallback for custom user categories
+  return {
+    icon: 'fa-solid fa-tag',
+    color: 'var(--brand-600)',
+    bg: 'var(--brand-50)'
+  };
+}
+
+// Currency Formatter
+function formatINR(amount) {
+  return '₹' + Number(amount || 0).toLocaleString('en-IN');
+}
+
+// Format date into human-readable string (e.g. "19 Nov 2026")
+function formatDateDisplay(dateString) {
+  if (!dateString) return 'No Date';
+  const parts = dateString.split('-');
+  if (parts.length === 3) {
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (!isNaN(d.getTime())) {
+      const today = new Date();
+      if (d.toDateString() === today.toDateString()) return 'Today';
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+  }
+  return dateString;
+}
+
+// Get Today's date in YYYY-MM-DD
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// =============================================================================
+// NOTIFICATION & TOAST
+// =============================================================================
+
+function showToast(message, isSuccess = true) {
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMessage');
+
+  if (toastMsg) {
+    toastMsg.innerText = message;
+  } else if (toast) {
+    toast.innerText = message;
+  }
+
+  if (toast) {
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+}
+
+// =============================================================================
+// NAVIGATION & THEME CONTROLS
+// =============================================================================
+
+function openSection(id, element) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const targetSection = document.getElementById(id);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
+
+  // Update active status on both sidebar and mobile navigation items
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(nav => {
+    nav.classList.remove('active');
+  });
+
+  // Highlight active tab across desktop and mobile matching the section
+  const sectionIndex = ['dashboard', 'expenses', 'reports', 'settings'].indexOf(id);
+  if (sectionIndex !== -1) {
+    const sidebarItems = document.querySelectorAll('.sidebar-nav .nav-item');
+    if (sidebarItems[sectionIndex]) sidebarItems[sectionIndex].classList.add('active');
+
+    const mobileItems = document.querySelectorAll('.mobile-nav .mobile-nav-item');
+    if (mobileItems[sectionIndex]) mobileItems[sectionIndex].classList.add('active');
+  }
+
+  // If specific element passed, ensure it is active
+  if (element && element.classList) {
+    element.classList.add('active');
+  }
+
+  // Scroll to top smoothly
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+  const themeIcon = document.querySelector('#themeToggle i');
+  if (themeIcon) {
+    themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+}
+
+// Restore saved theme on startup
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark');
+  const themeIcon = document.querySelector('#themeToggle i');
+  if (themeIcon) {
+    themeIcon.className = 'fa-solid fa-sun';
+  }
+}
+
+const themeBtn = document.getElementById('themeToggle');
+if (themeBtn) {
+  themeBtn.addEventListener('click', toggleTheme);
+}
+
+// =============================================================================
+// MODALS LOGIC
+// =============================================================================
+
+function openAddModal() {
+  const modal = document.getElementById('addExpenseModal');
+  if (!modal) return;
+
+  // Set today's date as default
+  const dateInput = document.getElementById('modalExpenseDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = getTodayDateString();
+  }
+
+  modal.classList.add('show');
+  setTimeout(() => {
+    const amountInput = document.getElementById('modalExpenseAmount');
+    if (amountInput) amountInput.focus();
+  }, 100);
+}
+
+function openEditBudgetModal() {
+  const modal = document.getElementById('editBudgetModal');
+  if (!modal) return;
+  const input = document.getElementById('modalBudgetInput');
+  if (input) input.value = budget;
+  modal.classList.add('show');
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.classList.remove('show');
+}
+
+function closeModalOnBackdrop(event, modalId) {
+  if (event.target.id === modalId) {
+    closeModal(modalId);
+  }
+}
+
+function setQuickAmount(val) {
+  const input = document.getElementById('expenseAmount');
+  if (input) {
+    const current = Number(input.value) || 0;
+    input.value = current + val;
+  }
+}
+
+function setModalQuickAmount(val) {
+  const input = document.getElementById('modalExpenseAmount');
+  if (input) {
+    const current = Number(input.value) || 0;
+    input.value = current + val;
+  }
+}
+
+function setBudgetPreset(val) {
+  const input = document.getElementById('budgetInput');
+  if (input) input.value = val;
+}
+
+function submitModalExpense() {
+  const amountInput = document.getElementById('modalExpenseAmount');
+  const catInput = document.getElementById('modalExpenseCategory');
+  const dateInput = document.getElementById('modalExpenseDate');
+  const noteInput = document.getElementById('modalExpenseNote');
+
+  const amount = Number(amountInput.value);
+  const category = catInput.value;
+  const date = dateInput.value || getTodayDateString();
+  const note = noteInput.value.trim();
+
+  if (amount <= 0 || isNaN(amount)) {
+    showToast('Please enter a valid amount');
+    return;
+  }
+
+  expenses.unshift({
+    id: Date.now(),
+    amount,
+    category,
+    date,
+    note
+  });
+
+  saveData();
+  updateUI();
+
+  // Reset inputs & close modal
+  amountInput.value = '';
+  noteInput.value = '';
+  closeModal('addExpenseModal');
+  showToast('Expense added successfully');
+}
+
+function submitModalBudget() {
+  const input = document.getElementById('modalBudgetInput');
+  const val = Number(input.value);
+
+  if (val <= 0 || isNaN(val)) {
+    showToast('Enter a valid budget limit');
+    return;
+  }
+
+  budget = val;
+  saveData();
+  updateUI();
+  closeModal('editBudgetModal');
+  showToast('Monthly budget updated');
+}
+
+// =============================================================================
+// CATEGORY CONTROLS
+// =============================================================================
+
+function renderCategoryOptions() {
+  const selectExpense = document.getElementById('expenseCategory');
+  const selectModal = document.getElementById('modalExpenseCategory');
+  const selectFilter = document.getElementById('expenseFilterCategory');
+
+  let optionsHTML = '';
+  categories.forEach(cat => {
+    optionsHTML += `<option value="${cat.name}">${cat.name}</option>`;
+  });
+
+  if (selectExpense) selectExpense.innerHTML = optionsHTML;
+  if (selectModal) selectModal.innerHTML = optionsHTML;
+
+  if (selectFilter) {
+    const currentVal = selectFilter.value;
+    selectFilter.innerHTML = '<option value="ALL">All Categories</option>' + optionsHTML;
+    if (currentVal) selectFilter.value = currentVal;
+  }
+}
+
+function addCategory() {
+  const nameInput = document.getElementById('newCategory');
+  const allocInput = document.getElementById('newAllocation');
+
+  const name = nameInput.value.trim();
+  const allocation = Number(allocInput.value);
+
+  if (!name) {
+    showToast('Please enter a category name');
+    return;
+  }
+
+  if (allocation <= 0 || isNaN(allocation)) {
+    showToast('Enter a valid percentage');
+    return;
+  }
+
+  const existing = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    showToast('Category already exists');
+    return;
+  }
+
+  const currentTotal = categories.reduce((sum, c) => sum + c.allocation, 0);
+  if (currentTotal + allocation > 100) {
+    showToast(`Total allocation would exceed 100% (Available: ${100 - currentTotal}%)`);
+    return;
+  }
+
+  categories.push({ name, allocation });
+  saveData();
+  updateUI();
+
+  nameInput.value = '';
+  allocInput.value = '';
+  showToast(`Category "${name}" added`);
+}
+
+function updateAllocation(index, value) {
+  value = Number(value);
+  if (isNaN(value) || value < 0) {
+    showToast('Enter a valid allocation');
+    updateUI();
+    return;
+  }
+
+  const othersSum = categories.reduce((sum, c, i) => (i !== index ? sum + c.allocation : sum), 0);
+
+  if (othersSum + value > 100) {
+    showToast(`Total allocation exceeds 100% (Max allowed: ${100 - othersSum}%)`);
+    updateUI();
+    return;
+  }
+
+  categories[index].allocation = value;
+  saveData();
+  updateUI();
+  showToast('Allocation updated');
+}
+
+function renderCategories() {
+  const container = document.getElementById('categoryAllocations');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (categories.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
+        <h4>No categories defined</h4>
+        <p>Add budget categories in Settings.</p>
+      </div>
+    `;
+    return;
+  }
+
+  categories.forEach((cat, index) => {
+    const allocated = Math.round((budget * cat.allocation) / 100);
+    const spentCategory = expenses
+      .filter(e => e.category === cat.name)
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    const spentPercentage = allocated > 0 ? Math.min(100, Math.round((spentCategory / allocated) * 100)) : 0;
+    const isExceeded = spentCategory > allocated;
+
+    const meta = getCategoryMeta(cat.name);
+
+    container.innerHTML += `
+      <div class="category-item">
+        <div class="category-header-row">
+          <div class="category-badge-group">
+            <span class="category-dot" style="background-color: ${meta.color};"></span>
+            <div>
+              <span class="category-title">${cat.name}</span>
+              <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 1px;">
+                ${spentCategory > 0 ? formatINR(spentCategory) + ' spent of ' + formatINR(allocated) : formatINR(allocated) + ' cap'}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input
+              type="number"
+              class="allocation-input-pill"
+              value="${cat.allocation}"
+              min="0"
+              max="100"
+              onchange="updateAllocation(${index}, this.value)"
+              title="Allocation Percentage"
+            >
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-tertiary);">%</span>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div
+            class="progress-fill ${isExceeded ? 'danger' : spentPercentage > 80 ? 'warning' : ''}"
+            style="width: ${spentPercentage}%; background-color: ${isExceeded ? 'var(--danger)' : meta.color};"
+          ></div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// =============================================================================
+// BUDGET MANAGEMENT
+// =============================================================================
+
+function updateBudget() {
+  const input = document.getElementById('budgetInput');
+  const value = Number(input.value);
+
+  if (value <= 0 || isNaN(value)) {
+    showToast('Please enter a valid budget amount');
+    return;
+  }
+
+  budget = value;
+  saveData();
+  updateUI();
+  input.value = '';
+  showToast('Monthly budget updated');
+}
+
+// =============================================================================
+// EXPENSE MANAGEMENT
+// =============================================================================
+
+function addExpense() {
+  const amountInput = document.getElementById('expenseAmount');
+  const catInput = document.getElementById('expenseCategory');
+  const dateInput = document.getElementById('expenseDate');
+  const noteInput = document.getElementById('expenseNote');
+
+  const amount = Number(amountInput.value);
+  const category = catInput.value;
+  const date = dateInput.value || getTodayDateString();
+  const note = noteInput.value.trim();
+
+  if (amount <= 0 || isNaN(amount)) {
+    showToast('Please enter a valid expense amount');
+    return;
+  }
+
+  expenses.unshift({
+    id: Date.now(),
+    amount,
+    category,
+    date,
+    note
+  });
+
+  saveData();
+  updateUI();
+
+  amountInput.value = '';
+  noteInput.value = '';
+  showToast('Expense recorded');
+}
+
+function deleteExpense(index) {
+  if (confirm('Delete this expense?')) {
+    expenses.splice(index, 1);
+    saveData();
+    updateUI();
+    showToast('Expense deleted');
+  }
+}
+
+function renderExpenses() {
+  const recentContainer = document.getElementById('recentExpenses');
+  const fullContainer = document.getElementById('expenseList');
+
+  // 1. Render Recent Expenses on Dashboard (max 5)
+  if (recentContainer) {
+    recentContainer.innerHTML = '';
+    if (expenses.length === 0) {
+      recentContainer.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon"><i class="fa-solid fa-receipt"></i></div>
+          <h4>No expenses yet</h4>
+          <p>Your recent transactions will appear here once logged.</p>
+        </div>
+      `;
+    } else {
+      expenses.slice(0, 5).forEach((exp, idx) => {
+        const meta = getCategoryMeta(exp.category);
+        recentContainer.innerHTML += `
+          <div class="expense-item">
+            <div class="expense-left">
+              <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
+                <i class="${meta.icon}"></i>
+              </div>
+              <div class="expense-meta">
+                <div class="expense-category-name">${exp.note || exp.category}</div>
+                <div class="expense-note">
+                  <span>${exp.category}</span>
+                  <span>•</span>
+                  <span class="expense-date-badge">${formatDateDisplay(exp.date)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="expense-right">
+              <div class="expense-amount" style="color: var(--danger);">${formatINR(exp.amount)}</div>
+              <button class="btn-icon-subtle" onclick="deleteExpense(${idx})" title="Delete">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  // 2. Render Full List on Expenses Page
+  filterExpensesList();
+}
+
+// Filter and search on Expenses Page
+function filterExpensesList() {
+  const container = document.getElementById('expenseList');
+  if (!container) return;
+
+  const searchInput = document.getElementById('expenseSearch');
+  const filterCat = document.getElementById('expenseFilterCategory');
+
+  const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+  const selectedCat = filterCat ? filterCat.value : 'ALL';
+
+  const filtered = expenses.filter(exp => {
+    const matchesCat = selectedCat === 'ALL' || exp.category === selectedCat;
+    const matchesQuery = !query ||
+      (exp.note && exp.note.toLowerCase().includes(query)) ||
+      (exp.category && exp.category.toLowerCase().includes(query));
+    return matchesCat && matchesQuery;
+  });
+
+  container.innerHTML = '';
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h4>No matching expenses</h4>
+        <p>Try clearing your search query or category filter.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(exp => {
+    const originalIndex = expenses.findIndex(e => e.id === exp.id);
+    const meta = getCategoryMeta(exp.category);
+
+    container.innerHTML += `
+      <div class="expense-item">
+        <div class="expense-left">
+          <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
+            <i class="${meta.icon}"></i>
+          </div>
+          <div class="expense-meta">
+            <div class="expense-category-name">${exp.note || exp.category}</div>
+            <div class="expense-note">
+              <span>${exp.category}</span>
+              <span>•</span>
+              <span class="expense-date-badge">${formatDateDisplay(exp.date)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="expense-right">
+          <div class="expense-amount" style="color: var(--danger);">${formatINR(exp.amount)}</div>
+          <button class="btn-icon-subtle" onclick="deleteExpense(${originalIndex})" title="Delete">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Export data to CSV
+function exportExpensesToCSV() {
+  if (expenses.length === 0) {
+    showToast('No expenses to export');
+    return;
+  }
+
+  let csvContent = 'data:text/csv;charset=utf-8,';
+  csvContent += 'ID,Date,Category,Amount,Note\n';
+
+  expenses.forEach(e => {
+    const noteSafe = (e.note || '').replace(/"/g, '""');
+    csvContent += `"${e.id}","${e.date || ''}","${e.category}","${e.amount}","${noteSafe}"\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `spendora_expenses_${getTodayDateString()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast('Expenses exported as CSV');
+}
+
+// =============================================================================
+// STATS & METRICS ENGINE
+// =============================================================================
+
+function updateStats() {
+  const totalSpent = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const remaining = budget - totalSpent;
+  const savingsRate = budget > 0 ? Math.max(0, Math.round((remaining / budget) * 100)) : 0;
+  const spentRate = budget > 0 ? Math.round((totalSpent / budget) * 100) : 0;
+
+  // 1. Dashboard Values
+  const budgetElem = document.getElementById('budgetDisplay');
+  const spentElem = document.getElementById('spentDisplay');
+  const remainingElem = document.getElementById('remainingDisplay');
+  const savingsElem = document.getElementById('savingsDisplay');
+  const savingsBar = document.getElementById('savingsBar');
+
+  if (budgetElem) budgetElem.innerText = formatINR(budget);
+  if (spentElem) spentElem.innerText = formatINR(totalSpent);
+  if (remainingElem) remainingElem.innerText = formatINR(remaining);
+  if (savingsElem) savingsElem.innerText = `${savingsRate}%`;
+
+  if (savingsBar) {
+    savingsBar.style.width = `${savingsRate}%`;
+    savingsBar.className = `progress-fill ${savingsRate > 50 ? 'success' : savingsRate > 20 ? 'warning' : 'danger'}`;
+  }
+
+  // 2. Spent Badge & Burn Rate
+  const spentBadge = document.getElementById('spentPercentageBadge');
+  if (spentBadge) {
+    spentBadge.innerText = `${spentRate}% of limit`;
+    spentBadge.className = `metric-badge ${spentRate > 90 ? 'danger' : spentRate > 75 ? 'warning' : 'neutral'}`;
+  }
+
+  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+  const currentDay = new Date().getDate();
+  const daysLeft = Math.max(1, daysInMonth - currentDay);
+  const dailyBurn = Math.round(totalSpent / Math.max(1, currentDay));
+
+  const burnRateElem = document.getElementById('dailyBurnRate');
+  if (burnRateElem) burnRateElem.innerText = `~${formatINR(dailyBurn)}/day`;
+
+  // 3. Remaining Status Badge
+  const remBadge = document.getElementById('remainingStatusBadge');
+  if (remBadge) {
+    if (remaining < 0) {
+      remBadge.innerText = 'Over Budget';
+      remBadge.className = 'metric-badge danger';
+    } else if (remaining < budget * 0.2) {
+      remBadge.innerText = 'Low Cushion';
+      remBadge.className = 'metric-badge warning';
+    } else {
+      remBadge.innerText = 'On Track';
+      remBadge.className = 'metric-badge positive';
+    }
+  }
+
+  // 4. Reports Tab Metrics
+  const reportSpent = document.getElementById('reportSpent');
+  if (reportSpent) reportSpent.innerText = formatINR(totalSpent);
+
+  // Top Category Calculation
+  let topCategoryName = 'None';
+  const categoryTotals = {};
+
+  expenses.forEach(exp => {
+    categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+  });
+
+  const catKeys = Object.keys(categoryTotals);
+  if (catKeys.length > 0) {
+    topCategoryName = catKeys.reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b);
+  }
+
+  const topCatElem = document.getElementById('topCategory');
+  if (topCatElem) {
+    topCatElem.innerText = topCategoryName !== 'None'
+      ? `${topCategoryName} (${formatINR(categoryTotals[topCategoryName])})`
+      : 'None';
+  }
+
+  // Budget Health Status
+  let healthScore = 'Excellent';
+  let healthClass = 'positive';
+
+  if (remaining < 0) {
+    healthScore = 'Deficit';
+    healthClass = 'danger';
+  } else if (savingsRate < 25) {
+    healthScore = 'Tight';
+    healthClass = 'warning';
+  } else if (savingsRate < 50) {
+    healthScore = 'Moderate';
+    healthClass = 'warning';
+  }
+
+  const healthElem = document.getElementById('budgetHealth');
+  const healthBadge = document.getElementById('budgetHealthBadge');
+  if (healthElem) healthElem.innerText = healthScore;
+  if (healthBadge) {
+    healthBadge.innerText = healthScore === 'Excellent' ? 'Strong Buffer' : healthScore === 'Deficit' ? 'Exceeded Limit' : 'Watch Daily Spend';
+    healthBadge.className = `metric-badge ${healthClass}`;
+  }
+
+  // Render Smart Insights & Notifications
+  renderSuggestions(totalSpent, remaining, dailyBurn, daysLeft, topCategoryName);
+  renderNotifications(totalSpent);
+  renderAnalyticsBreakdown(totalSpent, categoryTotals);
+}
+
+// =============================================================================
+// SMART STUDENT ADVICE & INSIGHTS
+// =============================================================================
+
+function renderSuggestions(spent, remaining, dailyBurn, daysLeft, topCat) {
+  const container = document.getElementById('suggestions');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const tips = [];
+
+  const safeDailySpend = Math.max(0, Math.round(remaining / daysLeft));
+
+  if (remaining <= 0) {
+    tips.push({
+      icon: 'fa-solid fa-triangle-exclamation',
+      color: 'var(--danger)',
+      text: `<strong>Budget Limit Reached:</strong> You have exceeded your ₹${budget.toLocaleString('en-IN')} target by ${formatINR(Math.abs(remaining))}. Pause discretionary expenses.`
+    });
+  } else {
+    tips.push({
+      icon: 'fa-solid fa-calculator',
+      color: 'var(--brand-600)',
+      text: `<strong>Daily Allowance:</strong> You can safely spend <strong>${formatINR(safeDailySpend)}/day</strong> over the next ${daysLeft} days to stay strictly within budget.`
+    });
+  }
+
+  if (topCat && topCat !== 'None') {
+    tips.push({
+      icon: 'fa-solid fa-chart-pie',
+      color: 'var(--warning)',
+      text: `<strong>Primary Expense:</strong> Your highest outflow is <strong>${topCat}</strong>. Consider auditing non-essential spends in this category.`
+    });
+  }
+
+  if (expenses.length >= 3 && spent < budget * 0.4 && daysLeft > 15) {
+    tips.push({
+      icon: 'fa-solid fa-medal',
+      color: 'var(--success)',
+      text: `<strong>Frugal Milestone:</strong> Great pacing! You have used under 40% of your budget midway through the month.`
+    });
+  }
+
+  if (tips.length === 0) {
+    tips.push({
+      icon: 'fa-solid fa-info-circle',
+      color: 'var(--info)',
+      text: 'Log your daily canteen, travel, and project purchases for predictive student analytics.'
+    });
+  }
+
+  tips.forEach(t => {
+    container.innerHTML += `
+      <div class="insight-card">
+        <i class="${t.icon} insight-icon" style="color: ${t.color};"></i>
+        <div>${t.text}</div>
+      </div>
+    `;
+  });
+}
+
+// Notifications feed in Settings
+function renderNotifications(spent) {
+  const container = document.getElementById('notifications');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const notices = [];
+
+  if (spent > budget) {
+    notices.push({
+      title: 'Monthly Budget Limit Exceeded',
+      desc: `Total spending (${formatINR(spent)}) has surpassed your set limit of ${formatINR(budget)}.`,
+      type: 'danger'
+    });
+  }
+
+  categories.forEach(cat => {
+    const allocated = (budget * cat.allocation) / 100;
+    const spentCategory = expenses
+      .filter(e => e.category === cat.name)
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    if (spentCategory > allocated) {
+      notices.push({
+        title: `${cat.name} Allocation Overrun`,
+        desc: `Spent ${formatINR(spentCategory)} vs ${formatINR(allocated)} allotted (${cat.allocation}% cap).`,
+        type: 'warning'
+      });
+    }
+  });
+
+  if (notices.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 18px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+        <i class="fa-solid fa-circle-check" style="color: var(--success); margin-right: 6px;"></i>
+        All spending is safely within your established budget limits.
+      </div>
+    `;
+    return;
+  }
+
+  notices.forEach(n => {
+    container.innerHTML += `
+      <div class="insight-card" style="border-left: 3px solid ${n.type === 'danger' ? 'var(--danger)' : 'var(--warning)'}; margin-bottom: 10px;">
+        <i class="fa-solid fa-circle-exclamation insight-icon" style="color: ${n.type === 'danger' ? 'var(--danger)' : 'var(--warning)'};"></i>
+        <div>
+          <strong style="color: var(--text-primary);">${n.title}</strong>
+          <div style="margin-top: 3px; font-size: 12px; color: var(--text-secondary);">${n.desc}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Analytics Tab Visual Breakdown
+function renderAnalyticsBreakdown(totalSpent, categoryTotals) {
+  const barsContainer = document.getElementById('analyticsCategoryBars');
+  const adviceBody = document.getElementById('analyticsAdviceBody');
+
+  if (barsContainer) {
+    barsContainer.innerHTML = '';
+    if (totalSpent === 0) {
+      barsContainer.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon"><i class="fa-solid fa-chart-column"></i></div>
+          <h4>No data for analytics</h4>
+          <p>Logged transactions will generate distribution charts here.</p>
+        </div>
+      `;
+    } else {
+      Object.keys(categoryTotals).forEach(catName => {
+        const amt = categoryTotals[catName];
+        const pct = Math.round((amt / totalSpent) * 100);
+        const meta = getCategoryMeta(catName);
+
+        barsContainer.innerHTML += `
+          <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span class="category-dot" style="background-color: ${meta.color};"></span>
+                <span>${catName}</span>
+              </span>
+              <span>${formatINR(amt)} <span style="color: var(--text-tertiary); font-weight: 500;">(${pct}%)</span></span>
+            </div>
+            <div class="progress-track" style="height: 9px;">
+              <div class="progress-fill" style="width: ${pct}%; background-color: ${meta.color};"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  if (adviceBody) {
+    adviceBody.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="insight-card">
+          <i class="fa-solid fa-shield-halved insight-icon"></i>
+          <div>
+            <strong>50-30-20 Rule for Students:</strong>
+            Aim to allocate 50% for core needs (canteen, commute, study supplies), 30% for personal activities, and keep at least 20% untouched for emergencies or semester projects.
+          </div>
+        </div>
+        <div class="insight-card">
+          <i class="fa-solid fa-wallet insight-icon"></i>
+          <div>
+            <strong>Micro-Expense Control:</strong>
+            Small daily cash spends (snacks, printing, short autos) compound quickly. Tracking every expense below ₹50 reveals up to 15-20% of untracked leakage.
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// =============================================================================
+// RESET DATA CONTROLLER
+// =============================================================================
+
+function resetAllData() {
+  const confirmFirst = confirm('Are you sure you want to completely reset SPENDORA data?');
+  if (!confirmFirst) return;
+
+  const confirmSecond = confirm('This will permanently delete all expenses and restore default student categories. Proceed?');
+  if (!confirmSecond) return;
+
+  localStorage.clear();
+
+  budget = 15000;
+  categories = [
+    { name: 'Food', allocation: 30 },
+    { name: 'Transport', allocation: 20 },
+    { name: 'Shopping', allocation: 20 },
+    { name: 'Study', allocation: 15 },
+    { name: 'Entertainment', allocation: 15 }
+  ];
+  expenses = [];
+
+  updateUI();
+  showToast('All SPENDORA data has been reset to defaults');
+}
+
+// =============================================================================
+// GLOBAL REFRESH ENGINE
+// =============================================================================
+
+function updateUI() {
+  renderCategoryOptions();
+  renderCategories();
+  renderExpenses();
+  updateStats();
+  saveData();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  // Set default dates
+  const expenseDateInput = document.getElementById('expenseDate');
+  if (expenseDateInput && !expenseDateInput.value) {
+    expenseDateInput.value = getTodayDateString();
+  }
+
+  updateUI();
+});
+
+// Run immediate update for fast paint
+updateUI();
