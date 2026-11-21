@@ -81,28 +81,23 @@ function saveData() {
 const CATEGORY_MAP = {
   'Food': {
     icon: 'fa-solid fa-utensils',
-    color: '#f97316',
-    bg: 'var(--cat-food-bg)'
+    color: 'var(--cat-food)'
   },
   'Transport': {
     icon: 'fa-solid fa-bus-simple',
-    color: '#0ea5e9',
-    bg: 'var(--cat-transport-bg)'
+    color: 'var(--cat-transport)'
   },
   'Shopping': {
     icon: 'fa-solid fa-bag-shopping',
-    color: '#8b5cf6',
-    bg: 'var(--cat-shopping-bg)'
+    color: 'var(--cat-shopping)'
   },
   'Study': {
     icon: 'fa-solid fa-book-open',
-    color: '#10b981',
-    bg: 'var(--cat-study-bg)'
+    color: 'var(--cat-study)'
   },
   'Entertainment': {
     icon: 'fa-solid fa-gamepad',
-    color: '#ec4899',
-    bg: 'var(--cat-entertainment-bg)'
+    color: 'var(--cat-entertainment)'
   }
 };
 
@@ -112,8 +107,7 @@ function getCategoryMeta(categoryName) {
   }
   return {
     icon: 'fa-solid fa-tag',
-    color: 'var(--brand-600)',
-    bg: 'var(--brand-50)'
+    color: 'var(--text-secondary)'
   };
 }
 
@@ -591,7 +585,7 @@ function renderExpenses() {
         recentContainer.innerHTML += `
           <div class="expense-item">
             <div class="expense-left">
-              <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
+              <div class="category-icon-box">
                 <i class="${meta.icon}"></i>
               </div>
               <div class="expense-meta">
@@ -604,7 +598,7 @@ function renderExpenses() {
               </div>
             </div>
             <div class="expense-right">
-              <div class="expense-amount" style="color: var(--danger);">${formatINR(exp.amount)}</div>
+              <div class="expense-amount">- ${formatINR(exp.amount)}</div>
               <button class="btn-icon-subtle" onclick="deleteExpense(${idx})" title="Delete">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
@@ -658,7 +652,7 @@ function filterExpensesList() {
     container.innerHTML += `
       <div class="expense-item">
         <div class="expense-left">
-          <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
+          <div class="category-icon-box">
             <i class="${meta.icon}"></i>
           </div>
           <div class="expense-meta">
@@ -671,7 +665,7 @@ function filterExpensesList() {
           </div>
         </div>
         <div class="expense-right">
-          <div class="expense-amount" style="color: var(--danger);">${formatINR(exp.amount)}</div>
+          <div class="expense-amount">- ${formatINR(exp.amount)}</div>
           <button class="btn-icon-subtle" onclick="deleteExpense(${originalIndex})" title="Delete">
             <i class="fa-solid fa-trash-can"></i>
           </button>
