@@ -40,7 +40,7 @@ button, input, select {
   z-index: 40;
 }
 
-/* Coloured Brand Logo */
+/* Unboxed Clean Brand Logo (Zero Boxes) */
 .brand {
   display: flex;
   align-items: center;
@@ -48,44 +48,26 @@ button, input, select {
   padding-bottom: 20px;
   border-bottom: 1px solid #e2e8f0;
   margin-bottom: 20px;
+  cursor: pointer;
 }
 
-.brand-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: #ffffff;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.brand-logo-icon {
+  font-size: 26px;
+  color: #059669;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.brand:hover .brand-icon {
-  transform: scale(1.06) rotate(3deg);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+.brand:hover .brand-logo-icon {
+  transform: scale(1.15) rotate(-6deg);
+  color: #047857;
 }
 
-.brand-info h1 {
-  font-size: 17px;
+.brand-title {
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: #0f172a;
-  line-height: 1.15;
-}
-
-.brand-badge {
-  font-size: 11px;
-  color: #2563eb;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: 600;
+  line-height: 1;
 }
 
 /* Navigation Links */
@@ -117,21 +99,21 @@ button, input, select {
 }
 
 .nav-item:hover {
-  background-color: #eff6ff;
-  color: #2563eb;
+  background-color: #ecfdf5;
+  color: #059669;
   transform: translateX(4px);
 }
 
 .nav-item:hover i {
-  color: #2563eb;
+  color: #059669;
   transform: scale(1.12);
 }
 
 .nav-item.active {
-  background-color: #2563eb;
+  background-color: #059669;
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 3px 10px rgba(5, 150, 105, 0.25);
   transform: none;
 }
 
@@ -160,7 +142,7 @@ button, input, select {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #059669, #10b981);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -190,17 +172,21 @@ button, input, select {
   flex: 1;
   margin-left: 250px;
   padding: 28px 36px;
+  max-width: 1380px;
 }
 
+/* Top Header Bar */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .header-greeting h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -208,7 +194,7 @@ button, input, select {
 .header-greeting p {
   font-size: 13px;
   color: #64748b;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .header-actions {
@@ -217,43 +203,51 @@ button, input, select {
   gap: 12px;
 }
 
-/* Content Views */
-.content {
-  width: 100%;
-}
-
+/* Sections */
 .section {
   display: none;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .section.active {
   display: block;
 }
 
-/* Responsive Grids */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Grid Layouts */
 .grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 24px;
 }
 
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 24px;
 }
 
 .grid-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
 .grid-split {
   display: grid;
-  grid-template-columns: 1.55fr 1fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: 20px;
 }
 
@@ -263,19 +257,19 @@ button, input, select {
   gap: 20px;
 }
 
-/* Cards with Interactive Hover */
+/* Cards */
 .card {
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
   border-radius: 12px;
+  border: 1px solid #e2e8f0;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
 }
 
@@ -296,14 +290,12 @@ button, input, select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .card-label {
-  font-size: 11.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  font-size: 13px;
+  font-weight: 500;
   color: #64748b;
 }
 
@@ -341,10 +333,10 @@ button, input, select {
   border: 1px solid #bbf7d0;
 }
 
-.metric-icon-box.blue {
-  background-color: #dbeafe;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+.metric-icon-box.emerald {
+  background-color: #d1fae5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
 }
 
 .metric-icon-box.purple {
@@ -412,7 +404,7 @@ button, input, select {
   border: 1px solid #e2e8f0;
 }
 
-/* Buttons (Vibrant Royal Blue & Red) */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -431,17 +423,17 @@ button, input, select {
 }
 
 .btn-primary {
-  background-color: #2563eb;
+  background-color: #059669;
   color: #ffffff;
-  border-color: #2563eb;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  border-color: #059669;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+  background-color: #047857;
+  border-color: #047857;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
 .btn-secondary {
@@ -452,8 +444,8 @@ button, input, select {
 
 .btn-secondary:hover {
   background-color: #f8fafc;
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #059669;
+  color: #059669;
   transform: translateY(-1px);
 }
 
@@ -480,16 +472,16 @@ button, input, select {
 }
 
 .btn-icon:hover {
-  background-color: #eff6ff;
-  border-color: #2563eb;
-  color: #2563eb;
+  background-color: #ecfdf5;
+  border-color: #059669;
+  color: #059669;
   transform: translateY(-1px) rotate(12deg);
 }
 
 .btn-text {
   background: none;
   border: none;
-  color: #2563eb;
+  color: #059669;
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
@@ -499,7 +491,7 @@ button, input, select {
 }
 
 .btn-text:hover {
-  color: #1d4ed8;
+  color: #047857;
 }
 
 .btn-sm {
@@ -510,36 +502,33 @@ button, input, select {
 .btn-block {
   width: 100%;
   justify-content: center;
-  margin-top: 10px;
 }
 
 .btn-close {
   background: none;
   border: none;
-  font-size: 24px;
-  color: #94a3b8;
+  font-size: 20px;
+  color: #64748b;
   cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 4px;
-  transition: all 0.15s ease;
+  padding: 4px;
+  transition: color 0.15s ease;
 }
 
 .btn-close:hover {
-  color: #dc2626;
-  background-color: #fee2e2;
+  color: #0f172a;
 }
 
-/* Forms & Clean Inputs */
+/* Forms & Inputs */
 .form-group {
   margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
+  color: #334155;
   margin-bottom: 6px;
-  color: #475569;
 }
 
 .input {
@@ -555,21 +544,44 @@ button, input, select {
 }
 
 .input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }
 
-/* Beautiful Date Picker & Calendar Styling */
+/* Easy Date Picker Container & Styling */
+.date-picker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.date-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #059669;
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .date-picker {
   cursor: pointer;
   position: relative;
   background-color: #ffffff;
 }
 
+.date-picker.with-icon {
+  padding-left: 36px;
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%;
+}
+
 .date-picker::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  filter: invert(0.35) sepia(100%) saturate(600%) hue-rotate(190deg);
-  opacity: 0.85;
+  filter: invert(0.4) sepia(100%) saturate(400%) hue-rotate(110deg);
+  opacity: 0.9;
   padding: 4px;
   border-radius: 4px;
   transition: transform 0.2s ease, opacity 0.2s ease;
@@ -578,31 +590,6 @@ button, input, select {
 .date-picker::-webkit-calendar-picker-indicator:hover {
   transform: scale(1.2);
   opacity: 1;
-}
-
-.date-row-helper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.btn-date-preset {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-date-preset:hover {
-  background: #e2e8f0;
-  border-color: #2563eb;
-  color: #2563eb;
 }
 
 .chip-row {
@@ -625,10 +612,18 @@ button, input, select {
 }
 
 .chip:hover {
-  background-color: #eff6ff;
-  border-color: #2563eb;
-  color: #2563eb;
+  background-color: #ecfdf5;
+  border-color: #059669;
+  color: #059669;
   transform: translateY(-1px);
+}
+
+.chip.active {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
 /* Progress Bars */
@@ -643,7 +638,7 @@ button, input, select {
 
 .progress-fill {
   height: 100%;
-  background-color: #2563eb;
+  background-color: #059669;
   border-radius: 6px;
   transition: width 0.3s ease;
 }
@@ -719,6 +714,10 @@ button, input, select {
   margin-top: 2px;
 }
 
+.expense-date-badge {
+  color: #94a3b8;
+}
+
 .expense-right {
   display: flex;
   align-items: center;
@@ -726,9 +725,10 @@ button, input, select {
 }
 
 .expense-amount {
+  font-weight: 700;
   font-size: 14px;
-  font-weight: 600;
   color: #0f172a;
+  font-variant-numeric: tabular-nums;
 }
 
 .btn-icon-subtle {
@@ -812,11 +812,16 @@ button, input, select {
   height: 9px;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 6px;
+}
+
+.category-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .allocation-input-pill {
-  width: 54px;
+  width: 48px;
   padding: 4px 6px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -828,7 +833,7 @@ button, input, select {
 }
 
 .allocation-input-pill:focus {
-  border-color: #2563eb;
+  border-color: #059669;
 }
 
 .search-bar {
@@ -847,7 +852,7 @@ button, input, select {
   margin-bottom: 8px;
   font-size: 12.5px;
   color: #475569;
-  border-left: 3px solid #2563eb;
+  border-left: 3px solid #059669;
   transition: transform 0.15s ease;
 }
 
@@ -947,7 +952,7 @@ button, input, select {
   transition: opacity 0.2s, transform 0.2s;
   pointer-events: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  border-left: 4px solid #2563eb;
+  border-left: 4px solid #059669;
 }
 
 .toast.show {
@@ -966,7 +971,7 @@ button, input, select {
 }
 
 /* ==========================================================================
-   DARK THEME (Deep Slate Navy & Blue Glow)
+   DARK THEME (Deep Slate Navy & Emerald Accents)
    ========================================================================== */
 body.dark {
   background-color: #0b0f19;
@@ -981,7 +986,7 @@ body.dark .modal-dialog {
 }
 
 body.dark .card:hover {
-  border-color: #3b82f6;
+  border-color: #10b981;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
@@ -991,8 +996,12 @@ body.dark .metric-number,
 body.dark .expense-category-name,
 body.dark .expense-amount,
 body.dark .modal-header h3,
-body.dark .brand-info h1 {
+body.dark .brand-title {
   color: #f8fafc;
+}
+
+body.dark .brand-logo-icon {
+  color: #10b981;
 }
 
 body.dark .nav-item {
@@ -1001,11 +1010,11 @@ body.dark .nav-item {
 
 body.dark .nav-item:hover {
   background-color: #1e293b;
-  color: #38bdf8;
+  color: #34d399;
 }
 
 body.dark .nav-item.active {
-  background-color: #2563eb;
+  background-color: #059669;
   color: #ffffff;
 }
 
@@ -1013,20 +1022,14 @@ body.dark .nav-item.active i {
   color: #ffffff;
 }
 
-body.dark .brand-badge {
-  background-color: #1e293b;
-  border-color: #3b82f6;
-  color: #60a5fa;
-}
-
 body.dark .btn-primary {
-  background-color: #2563eb;
+  background-color: #059669;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #059669;
 }
 
 body.dark .btn-primary:hover {
-  background-color: #1d4ed8;
+  background-color: #047857;
 }
 
 body.dark .btn-secondary,
@@ -1042,8 +1045,14 @@ body.dark .btn-secondary:hover,
 body.dark .btn-icon:hover,
 body.dark .chip:hover {
   background-color: #334155;
-  color: #60a5fa;
-  border-color: #3b82f6;
+  color: #34d399;
+  border-color: #10b981;
+}
+
+body.dark .chip.active {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
 }
 
 body.dark .input {
@@ -1053,16 +1062,24 @@ body.dark .input {
 }
 
 body.dark .input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+body.dark .date-picker.with-icon {
+  background-color: #1e293b;
+}
+
+body.dark .date-input-icon {
+  color: #34d399;
 }
 
 body.dark .date-picker::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: invert(1) hue-rotate(110deg);
 }
 
 body.dark .btn-text {
-  color: #60a5fa;
+  color: #34d399;
 }
 
 body.dark .progress-bar {
@@ -1078,7 +1095,7 @@ body.dark .badge.neutral {
 body.dark .insight-card {
   background-color: #1e293b;
   color: #cbd5e1;
-  border-left-color: #3b82f6;
+  border-left-color: #10b981;
 }
 
 body.dark .card-danger {
@@ -1175,16 +1192,16 @@ body.dark .category-manage-item:hover {
   }
 
   .mobile-nav-item:hover {
-    color: #2563eb;
+    color: #059669;
   }
 
   .mobile-nav-item.active {
-    color: #2563eb;
+    color: #059669;
     font-weight: 600;
   }
 
   body.dark .mobile-nav-item.active {
-    color: #60a5fa;
+    color: #34d399;
   }
 
   .mobile-fab {
@@ -1197,10 +1214,10 @@ body.dark .category-manage-item:hover {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #2563eb;
+    background-color: #059669;
     color: #ffffff;
     border: none;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
     z-index: 45;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
@@ -1208,6 +1225,6 @@ body.dark .category-manage-item:hover {
 
   .mobile-fab:hover {
     transform: scale(1.1);
-    background-color: #1d4ed8;
+    background-color: #047857;
   }
 }
