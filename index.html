@@ -5,19 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPENDORA — Student Budget Planner</title>
 
-  <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
-  <!-- Core Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- Toast Notification Container -->
   <div class="toast-container">
     <div class="toast" id="toast">
       <i class="fa-solid fa-circle-check"></i>
@@ -27,8 +24,7 @@
 
   <div class="app-container">
 
-    <!-- Sidebar Navigation -->
-    <aside class="app-sidebar">
+    <aside class="sidebar">
       <div>
         <div class="brand">
           <div class="brand-icon">
@@ -36,7 +32,7 @@
           </div>
           <div class="brand-info">
             <h1>SPENDORA</h1>
-            <span class="brand-badge">Student Finance</span>
+            <span class="brand-badge">Student Budget</span>
           </div>
         </div>
 
@@ -61,7 +57,7 @@
       </div>
 
       <div class="sidebar-footer">
-        <div class="user-mini-card">
+        <div class="user-card">
           <div class="user-avatar">N</div>
           <div class="user-details">
             <div class="user-name">Nivedh M</div>
@@ -71,14 +67,12 @@
       </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="app-main">
+    <main class="main">
 
-      <!-- Header / Topbar -->
-      <header class="app-header">
+      <header class="header">
         <div class="header-greeting">
-          <h2 id="pageGreeting">Welcome back, Nivedh</h2>
-          <p id="pageSubGreeting">Here is your student financial summary for this month</p>
+          <h2 id="pageGreeting">Welcome, Nivedh</h2>
+          <p id="pageSubGreeting">Student budget overview</p>
         </div>
 
         <div class="header-actions">
@@ -86,146 +80,94 @@
             <i class="fa-solid fa-plus"></i>
             <span>New Expense</span>
           </button>
-          <button class="btn-icon-only" id="themeToggle" title="Toggle Light/Dark Theme">
+          <button class="btn btn-icon" id="themeToggle" title="Toggle Dark/Light Mode">
             <i class="fa-solid fa-moon"></i>
           </button>
         </div>
       </header>
 
-      <!-- Page Content Views -->
-      <div class="page-content">
+      <div class="content">
 
-        <!-- ==========================================
-             SECTION 1: DASHBOARD
-             ========================================== -->
         <section class="section active" id="dashboard">
 
-          <!-- Metrics Row -->
-          <div class="metrics-grid">
+          <div class="grid-4">
 
-            <!-- Monthly Budget -->
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Monthly Budget</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-coins"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Monthly Budget</span>
+                <i class="fa-solid fa-coins icon-muted"></i>
               </div>
-              <div class="metric-value" id="budgetDisplay">₹15,000</div>
-              <div class="metric-footer">
-                <span class="metric-badge neutral">Allocated</span>
-                <button class="btn-inline-action" onclick="openEditBudgetModal()">Edit Limit</button>
+              <div class="metric-number" id="budgetDisplay">₹15,000</div>
+              <div class="card-bottom">
+                <span class="badge neutral">Limit</span>
+                <button class="btn-text" onclick="openEditBudgetModal()">Edit</button>
               </div>
             </div>
 
-            <!-- Total Spent -->
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Total Spent</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-arrow-trend-up"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Total Spent</span>
+                <i class="fa-solid fa-arrow-trend-up icon-muted"></i>
               </div>
-              <div class="metric-value" id="spentDisplay">₹0</div>
-              <div class="metric-footer">
-                <span class="metric-badge neutral" id="spentPercentageBadge">0% of budget</span>
-                <span style="font-size: 11px; color: var(--text-tertiary);" id="dailyBurnRate">₹0 / day</span>
+              <div class="metric-number" id="spentDisplay">₹0</div>
+              <div class="card-bottom">
+                <span class="badge neutral" id="spentPercentageBadge">0% used</span>
+                <span class="text-muted" id="dailyBurnRate">₹0/day</span>
               </div>
             </div>
 
-            <!-- Remaining Balance -->
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Remaining</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-piggy-bank"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Remaining</span>
+                <i class="fa-solid fa-piggy-bank icon-muted"></i>
               </div>
-              <div class="metric-value" id="remainingDisplay">₹15,000</div>
-              <div class="metric-footer">
-                <span class="metric-badge positive" id="remainingStatusBadge">On Track</span>
-                <span style="font-size: 11px; color: var(--text-tertiary);">Safe to spend</span>
+              <div class="metric-number" id="remainingDisplay">₹15,000</div>
+              <div class="card-bottom">
+                <span class="badge positive" id="remainingStatusBadge">On Track</span>
+                <span class="text-muted">Available</span>
               </div>
             </div>
 
-            <!-- Savings Rate -->
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Savings Rate</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-shield-halved"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Savings Rate</span>
+                <i class="fa-solid fa-shield-halved icon-muted"></i>
               </div>
-              <div class="metric-value" id="savingsDisplay">100%</div>
-              <div class="progress-track" style="margin-top: 4px;">
-                <div class="progress-fill success" id="savingsBar" style="width: 100%;"></div>
+              <div class="metric-number" id="savingsDisplay">100%</div>
+              <div class="progress-bar">
+                <div class="progress-fill positive" id="savingsBar" style="width: 100%;"></div>
               </div>
             </div>
 
           </div>
 
-          <!-- Split Layout: Recent Expenses & Category Allocations -->
-          <div class="grid-main-split">
+          <div class="grid-split">
 
-            <!-- Left: Recent Expenses -->
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-clock-rotate-left" style="color: var(--text-tertiary);"></i>
-                    Recent Expenses
-                  </h3>
-                  <p class="card-subtitle">Your latest logged transactions</p>
-                </div>
-                <button class="btn btn-secondary" onclick="openSection('expenses', document.querySelectorAll('.nav-item')[1])">
+                <h3>Recent Expenses</h3>
+                <button class="btn btn-secondary btn-sm" onclick="openSection('expenses', document.querySelectorAll('.nav-item')[1])">
                   <span>View All</span>
-                  <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                 </button>
               </div>
-
-              <div id="recentExpenses" class="transaction-list">
-                <!-- Dynamically rendered -->
-              </div>
+              <div id="recentExpenses" class="expense-list"></div>
             </div>
 
-            <!-- Right Column: Categories & Smart Insights -->
-            <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="stack">
 
-              <!-- Category Allocations Card -->
               <div class="card">
                 <div class="card-header">
-                  <div>
-                    <h3 class="card-title">
-                      <i class="fa-solid fa-layer-group" style="color: var(--text-tertiary);"></i>
-                      Category Allocations
-                    </h3>
-                    <p class="card-subtitle">Budget caps & progress per category</p>
-                  </div>
-                  <button class="btn-inline-action" onclick="openSection('settings', document.querySelectorAll('.nav-item')[3])">Manage</button>
+                  <h3>Category Allocations</h3>
+                  <button class="btn-text" onclick="openSection('settings', document.querySelectorAll('.nav-item')[3])">Edit</button>
                 </div>
-                <div class="card-body">
-                  <div id="categoryAllocations">
-                    <!-- Dynamically rendered -->
-                  </div>
-                </div>
+                <div id="categoryAllocations"></div>
               </div>
 
-              <!-- Smart Financial Insights -->
               <div class="card">
                 <div class="card-header">
-                  <div>
-                    <h3 class="card-title">
-                      <i class="fa-solid fa-lightbulb" style="color: var(--warning);"></i>
-                      Smart Advice
-                    </h3>
-                    <p class="card-subtitle">Automated student financial insights</p>
-                  </div>
+                  <h3>Suggestions</h3>
                 </div>
-                <div class="card-body">
-                  <div id="suggestions">
-                    <!-- Dynamically rendered -->
-                  </div>
-                </div>
+                <div id="suggestions"></div>
               </div>
 
             </div>
@@ -234,299 +176,174 @@
 
         </section>
 
-
-        <!-- ==========================================
-             SECTION 2: EXPENSES
-             ========================================== -->
         <section class="section" id="expenses">
 
-          <div class="grid-main-split">
+          <div class="grid-split">
 
-            <!-- Left: Add Expense Form -->
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-plus-circle" style="color: var(--brand-600);"></i>
-                    Add New Expense
-                  </h3>
-                  <p class="card-subtitle">Record an expense into your budget</p>
+                <h3>Add Expense</h3>
+              </div>
+
+              <div class="form-group">
+                <label>Amount (₹)</label>
+                <input class="input" id="expenseAmount" type="number" placeholder="Enter amount" min="1">
+                <div class="chip-row">
+                  <button type="button" class="chip" onclick="setQuickAmount(50)">+ ₹50</button>
+                  <button type="button" class="chip" onclick="setQuickAmount(100)">+ ₹100</button>
+                  <button type="button" class="chip" onclick="setQuickAmount(200)">+ ₹200</button>
+                  <button type="button" class="chip" onclick="setQuickAmount(500)">+ ₹500</button>
                 </div>
               </div>
 
-              <div class="card-body">
-                <div class="form-group">
-                  <label class="form-label">Amount (INR)</label>
-                  <div class="input-with-symbol">
-                    <span class="input-symbol">₹</span>
-                    <input class="input" id="expenseAmount" type="number" placeholder="0" min="1" step="any" required>
-                  </div>
-                  <div class="quick-chips-row">
-                    <span class="quick-chip" onclick="setQuickAmount(50)">+ ₹50</span>
-                    <span class="quick-chip" onclick="setQuickAmount(100)">+ ₹100</span>
-                    <span class="quick-chip" onclick="setQuickAmount(200)">+ ₹200</span>
-                    <span class="quick-chip" onclick="setQuickAmount(500)">+ ₹500</span>
-                    <span class="quick-chip" onclick="setQuickAmount(1000)">+ ₹1000</span>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Category</label>
-                  <select class="input" id="expenseCategory"></select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Transaction Date</label>
-                  <input class="input" id="expenseDate" type="date" required>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Note / Merchant</label>
-                  <input class="input" id="expenseNote" placeholder="e.g. Canteen lunch, Metro recharge, Books">
-                </div>
-
-                <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="addExpense()">
-                  <i class="fa-solid fa-check"></i>
-                  <span>Save Expense</span>
-                </button>
+              <div class="form-group">
+                <label>Category</label>
+                <select class="input" id="expenseCategory"></select>
               </div>
+
+              <div class="form-group">
+                <label>Date</label>
+                <input class="input" id="expenseDate" type="date">
+              </div>
+
+              <div class="form-group">
+                <label>Note / Description</label>
+                <input class="input" id="expenseNote" placeholder="e.g. Lunch, Bus ticket, Notebook">
+              </div>
+
+              <button class="btn btn-primary btn-block" onclick="addExpense()">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Expense</span>
+              </button>
             </div>
 
-            <!-- Right: Full Expense Log & Search -->
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-list-check" style="color: var(--text-tertiary);"></i>
-                    Expense History
-                  </h3>
-                  <p class="card-subtitle">Filter, search, or review all transactions</p>
-                </div>
-                <button class="btn btn-secondary" onclick="exportExpensesToCSV()" title="Download CSV">
+                <h3>Expense History</h3>
+                <button class="btn btn-secondary btn-sm" onclick="exportExpensesToCSV()">
                   <i class="fa-solid fa-download"></i>
-                  <span>Export</span>
+                  <span>Export CSV</span>
                 </button>
               </div>
 
-              <!-- Search & Filter Toolbar -->
-              <div class="transactions-toolbar">
-                <div class="search-input-wrap">
-                  <i class="fa-solid fa-magnifying-glass"></i>
-                  <input class="input-compact" id="expenseSearch" type="text" placeholder="Search note or category..." oninput="filterExpensesList()">
-                </div>
-                <select class="filter-select" id="expenseFilterCategory" onchange="filterExpensesList()">
+              <div class="search-bar">
+                <input class="input" id="expenseSearch" type="text" placeholder="Search note or category..." oninput="filterExpensesList()">
+                <select class="input" id="expenseFilterCategory" onchange="filterExpensesList()" style="max-width: 160px;">
                   <option value="ALL">All Categories</option>
                 </select>
               </div>
 
-              <div id="expenseList" class="transaction-list">
-                <!-- Dynamically rendered -->
-              </div>
+              <div id="expenseList" class="expense-list"></div>
             </div>
 
           </div>
 
         </section>
 
-
-        <!-- ==========================================
-             SECTION 3: ANALYTICS & REPORTS
-             ========================================== -->
         <section class="section" id="reports">
 
-          <!-- 3-Column Summary Cards -->
-          <div class="grid-three-col" style="margin-bottom: 24px;">
+          <div class="grid-3">
 
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Total Outflow</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-wallet"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Total Spent</span>
+                <i class="fa-solid fa-wallet icon-muted"></i>
               </div>
-              <div class="metric-value" id="reportSpent">₹0</div>
-              <div class="metric-footer">
-                <span class="metric-badge neutral">Aggregated Spend</span>
-              </div>
+              <div class="metric-number" id="reportSpent">₹0</div>
             </div>
 
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Top Spending Area</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-fire"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Top Category</span>
+                <i class="fa-solid fa-fire icon-muted"></i>
               </div>
-              <div class="metric-value" id="topCategory" style="font-size: 20px;">None</div>
-              <div class="metric-footer">
-                <span class="metric-badge warning">Highest Expense Group</span>
-              </div>
+              <div class="metric-number" id="topCategory" style="font-size: 20px;">None</div>
             </div>
 
-            <div class="metric-card">
-              <div class="metric-header">
-                <span class="metric-label">Budget Health Score</span>
-                <div class="metric-icon-wrap">
-                  <i class="fa-solid fa-heart-pulse"></i>
-                </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-label">Budget Health</span>
+                <i class="fa-solid fa-heart-pulse icon-muted"></i>
               </div>
-              <div class="metric-value" id="budgetHealth" style="font-size: 20px;">Excellent</div>
-              <div class="metric-footer">
-                <span class="metric-badge positive" id="budgetHealthBadge">Safe Margin</span>
+              <div class="metric-number" id="budgetHealth" style="font-size: 20px;">Excellent</div>
+              <div class="card-bottom">
+                <span class="badge positive" id="budgetHealthBadge">Safe Margin</span>
               </div>
             </div>
 
           </div>
 
-          <!-- Breakdown Visualizer -->
-          <div class="grid-two-col">
+          <div class="grid-2" style="margin-top: 20px;">
 
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-chart-simple" style="color: var(--brand-600);"></i>
-                    Spending by Category
-                  </h3>
-                  <p class="card-subtitle">Distribution breakdown of where your money went</p>
-                </div>
+                <h3>Spending by Category</h3>
               </div>
-              <div class="card-body">
-                <div id="analyticsCategoryBars">
-                  <!-- Category bars dynamically rendered -->
-                </div>
-              </div>
+              <div id="analyticsCategoryBars"></div>
             </div>
 
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-graduation-cap" style="color: var(--brand-600);"></i>
-                    Student Financial Health
-                  </h3>
-                  <p class="card-subtitle">Personalized budgeting recommendations</p>
-                </div>
+                <h3>Budgeting Advice</h3>
               </div>
-              <div class="card-body" id="analyticsAdviceBody">
-                <!-- Recommendations dynamically rendered -->
-              </div>
+              <div id="analyticsAdviceBody"></div>
             </div>
 
           </div>
 
         </section>
 
-
-        <!-- ==========================================
-             SECTION 4: SETTINGS & DATA
-             ========================================== -->
         <section class="section" id="settings">
 
-          <div class="grid-two-col" style="margin-bottom: 24px;">
+          <div class="grid-2">
 
-            <!-- Monthly Budget Settings Card -->
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-bullseye" style="color: var(--brand-600);"></i>
-                    Monthly Budget Target
-                  </h3>
-                  <p class="card-subtitle">Set your total monthly spending ceiling</p>
+                <h3>Monthly Budget Target</h3>
+              </div>
+              <div class="form-group">
+                <label>Budget (₹)</label>
+                <input class="input" id="budgetInput" type="number" placeholder="15000">
+                <div class="chip-row">
+                  <button type="button" class="chip" onclick="setBudgetPreset(10000)">₹10,000</button>
+                  <button type="button" class="chip" onclick="setBudgetPreset(15000)">₹15,000</button>
+                  <button type="button" class="chip" onclick="setBudgetPreset(20000)">₹20,000</button>
                 </div>
               </div>
-              <div class="card-body">
-                <div class="form-group">
-                  <label class="form-label">Budget Limit (INR)</label>
-                  <div class="input-with-symbol">
-                    <span class="input-symbol">₹</span>
-                    <input class="input" id="budgetInput" type="number" placeholder="15000" min="500">
-                  </div>
-                  <div class="quick-chips-row">
-                    <span class="quick-chip" onclick="setBudgetPreset(10000)">₹10,000 (Frugal)</span>
-                    <span class="quick-chip" onclick="setBudgetPreset(15000)">₹15,000 (Average)</span>
-                    <span class="quick-chip" onclick="setBudgetPreset(20000)">₹20,000 (Comfortable)</span>
-                  </div>
-                </div>
-
-                <button class="btn btn-primary" style="margin-top: 8px;" onclick="updateBudget()">
-                  <i class="fa-solid fa-floppy-disk"></i>
-                  <span>Save Budget Target</span>
-                </button>
-              </div>
+              <button class="btn btn-primary" onclick="updateBudget()">Save Budget</button>
             </div>
 
-            <!-- Add Category Card -->
             <div class="card">
               <div class="card-header">
-                <div>
-                  <h3 class="card-title">
-                    <i class="fa-solid fa-folder-plus" style="color: var(--brand-600);"></i>
-                    Add Budget Category
-                  </h3>
-                  <p class="card-subtitle">Create custom categories with allocation %</p>
-                </div>
+                <h3>Add New Category</h3>
               </div>
-              <div class="card-body">
-                <div class="form-group">
-                  <label class="form-label">Category Name</label>
-                  <input class="input" id="newCategory" placeholder="e.g. Subscriptions, Gym, Hobbies">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Allocation Percentage (%)</label>
-                  <input class="input" id="newAllocation" type="number" placeholder="15" min="1" max="100">
-                </div>
-
-                <button class="btn btn-primary" style="margin-top: 8px;" onclick="addCategory()">
-                  <i class="fa-solid fa-plus"></i>
-                  <span>Add Category</span>
-                </button>
+              <div class="form-group">
+                <label>Category Name</label>
+                <input class="input" id="newCategory" placeholder="e.g. Snacks, Travel, Books">
               </div>
+              <div class="form-group">
+                <label>Allocation (%)</label>
+                <input class="input" id="newAllocation" type="number" placeholder="15">
+              </div>
+              <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
             </div>
 
           </div>
 
-          <!-- Alerts and Notification Feed -->
-          <div class="card" style="margin-bottom: 24px;">
+          <div class="card" style="margin-top: 20px;">
             <div class="card-header">
-              <div>
-                <h3 class="card-title">
-                  <i class="fa-solid fa-bell" style="color: var(--warning);"></i>
-                  Active Budget Alerts
-                </h3>
-                <p class="card-subtitle">Real-time alerts triggered by threshold overruns</p>
-              </div>
+              <h3>Budget Alerts</h3>
             </div>
-            <div class="card-body">
-              <div id="notifications">
-                <!-- Dynamically rendered -->
-              </div>
-            </div>
+            <div id="notifications"></div>
           </div>
 
-          <!-- Danger Zone: Reset Data -->
-          <div class="card" style="border-color: rgba(239, 68, 68, 0.3);">
-            <div class="card-header" style="background-color: var(--danger-subtle);">
-              <div>
-                <h3 class="card-title" style="color: var(--danger-text);">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                  Danger Zone
-                </h3>
-                <p class="card-subtitle" style="color: var(--danger-text);">Permanently clear all data and reset to defaults</p>
-              </div>
+          <div class="card card-danger" style="margin-top: 20px;">
+            <div class="card-header">
+              <h3 style="color: #d32f2f;">Reset All Data</h3>
             </div>
-            <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-              <div>
-                <strong>Reset All SPENDORA Data</strong>
-                <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
-                  This will wipe all logged expenses, category modifications, and customized budget figures.
-                </p>
-              </div>
-              <button class="btn btn-danger" onclick="resetAllData()">
-                <i class="fa-solid fa-trash-can"></i>
-                <span>Reset Everything</span>
-              </button>
+            <div class="danger-row">
+              <p>Permanently delete all expenses and restore default student categories.</p>
+              <button class="btn btn-danger" onclick="resetAllData()">Reset Everything</button>
             </div>
           </div>
 
@@ -538,89 +355,69 @@
 
   </div>
 
-  <!-- Quick Add Modal -->
   <div class="modal-backdrop" id="addExpenseModal" onclick="closeModalOnBackdrop(event, 'addExpenseModal')">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Add Quick Expense</h3>
-        <button class="btn-icon-subtle" onclick="closeModal('addExpenseModal')">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <h3>Add Expense</h3>
+        <button class="btn-close" onclick="closeModal('addExpenseModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label">Amount (INR)</label>
-          <div class="input-with-symbol">
-            <span class="input-symbol">₹</span>
-            <input class="input" id="modalExpenseAmount" type="number" placeholder="0" min="1" step="any">
-          </div>
-          <div class="quick-chips-row">
-            <span class="quick-chip" onclick="setModalQuickAmount(50)">+ ₹50</span>
-            <span class="quick-chip" onclick="setModalQuickAmount(100)">+ ₹100</span>
-            <span class="quick-chip" onclick="setModalQuickAmount(200)">+ ₹200</span>
-            <span class="quick-chip" onclick="setModalQuickAmount(500)">+ ₹500</span>
+          <label>Amount (₹)</label>
+          <input class="input" id="modalExpenseAmount" type="number" placeholder="0" min="1">
+          <div class="chip-row">
+            <button type="button" class="chip" onclick="setModalQuickAmount(50)">+ ₹50</button>
+            <button type="button" class="chip" onclick="setModalQuickAmount(100)">+ ₹100</button>
+            <button type="button" class="chip" onclick="setModalQuickAmount(200)">+ ₹200</button>
+            <button type="button" class="chip" onclick="setModalQuickAmount(500)">+ ₹500</button>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Category</label>
+          <label>Category</label>
           <select class="input" id="modalExpenseCategory"></select>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Date</label>
+          <label>Date</label>
           <input class="input" id="modalExpenseDate" type="date">
         </div>
 
         <div class="form-group">
-          <label class="form-label">Note / Merchant</label>
-          <input class="input" id="modalExpenseNote" placeholder="e.g. Chai, Books, Printouts">
+          <label>Note</label>
+          <input class="input" id="modalExpenseNote" placeholder="e.g. Canteen lunch">
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('addExpenseModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitModalExpense()">
-          <i class="fa-solid fa-check"></i>
-          <span>Save Expense</span>
-        </button>
+        <button class="btn btn-primary" onclick="submitModalExpense()">Save Expense</button>
       </div>
     </div>
   </div>
 
-  <!-- Edit Budget Modal -->
   <div class="modal-backdrop" id="editBudgetModal" onclick="closeModalOnBackdrop(event, 'editBudgetModal')">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Adjust Monthly Budget</h3>
-        <button class="btn-icon-subtle" onclick="closeModal('editBudgetModal')">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <h3>Edit Monthly Budget</h3>
+        <button class="btn-close" onclick="closeModal('editBudgetModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label">New Monthly Target (INR)</label>
-          <div class="input-with-symbol">
-            <span class="input-symbol">₹</span>
-            <input class="input" id="modalBudgetInput" type="number" placeholder="15000">
-          </div>
+          <label>Monthly Target (₹)</label>
+          <input class="input" id="modalBudgetInput" type="number" placeholder="15000">
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('editBudgetModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitModalBudget()">
-          <i class="fa-solid fa-check"></i>
-          <span>Save Limit</span>
-        </button>
+        <button class="btn btn-primary" onclick="submitModalBudget()">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- Mobile Floating Action Button -->
-  <button class="mobile-fab" onclick="openAddModal()" title="Add Expense">
+  <button class="mobile-fab" onclick="openAddModal()">
     <i class="fa-solid fa-plus"></i>
   </button>
 
-  <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-nav">
     <div class="mobile-nav-item active" onclick="openSection('dashboard', this)">
       <i class="fa-solid fa-chart-pie"></i>
@@ -640,7 +437,6 @@
     </div>
   </nav>
 
-  <!-- Application Logic -->
   <script src="script.js"></script>
 
 </body>

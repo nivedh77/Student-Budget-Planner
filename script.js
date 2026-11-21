@@ -486,10 +486,10 @@ function renderCategories() {
             <span style="font-size: 12px; font-weight: 700; color: var(--text-tertiary);">%</span>
           </div>
         </div>
-        <div class="progress-track">
+        <div class="progress-bar">
           <div
-            class="progress-fill ${isExceeded ? 'danger' : spentPercentage > 80 ? 'warning' : ''}"
-            style="width: ${spentPercentage}%; background-color: ${isExceeded ? 'var(--danger)' : meta.color};"
+            class="progress-fill ${isExceeded ? 'danger' : spentPercentage > 80 ? 'warning' : 'positive'}"
+            style="width: ${spentPercentage}%;"
           ></div>
         </div>
       </div>
@@ -960,8 +960,8 @@ function renderAnalyticsBreakdown(totalSpent, categoryTotals) {
               </span>
               <span>${formatINR(amt)} <span style="color: var(--text-tertiary); font-weight: 500;">(${pct}%)</span></span>
             </div>
-            <div class="progress-track" style="height: 9px;">
-              <div class="progress-fill" style="width: ${pct}%; background-color: ${meta.color};"></div>
+            <div class="progress-bar">
+              <div class="progress-fill positive" style="width: ${pct}%;"></div>
             </div>
           </div>
         `;
