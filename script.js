@@ -1,15 +1,14 @@
 /**
  * SPENDORA — Student Budget Planner
  * Professional Fintech Core Logic & State Management
+ * Robust, bulletproof architecture with full exception handling.
  */
 
 // =============================================================================
-// STATE & LOCAL STORAGE INITIALIZATION
+// STATE & SAFE STORAGE INITIALIZATION
 // =============================================================================
 
-let budget = Number(localStorage.getItem('budget')) || 15000;
-
-let categories = JSON.parse(localStorage.getItem('categories')) || [
+const DEFAULT_CATEGORIES = [
   { name: 'Food', allocation: 30 },
   { name: 'Transport', allocation: 20 },
   { name: 'Shopping', allocation: 20 },
@@ -17,13 +16,62 @@ let categories = JSON.parse(localStorage.getItem('categories')) || [
   { name: 'Entertainment', allocation: 15 }
 ];
 
-let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+let budget = 15000;
+let categories = [...DEFAULT_CATEGORIES];
+let expenses = [];
 
-// Save state to localStorage
+// Safe reader for localStorage to avoid crashing on SecurityError or corrupted JSON
+function initStorage() {
+  try {
+    const savedBudget = localStorage.getItem('budget');
+    if (savedBudget) {
+      const parsedNum = Number(savedBudget);
+      if (!isNaN(parsedNum) && parsedNum > 0) {
+        budget = parsedNum;
+      }
+    }
+  } catch (err) {
+    console.warn('Storage read failed for budget:', err);
+  }
+
+  try {
+    const savedCats = localStorage.getItem('categories');
+    if (savedCats) {
+      const parsed = JSON.parse(savedCats);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        categories = parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Storage read failed for categories, falling back to defaults:', err);
+    categories = [...DEFAULT_CATEGORIES];
+  }
+
+  try {
+    const savedExp = localStorage.getItem('expenses');
+    if (savedExp) {
+      const parsed = JSON.parse(savedExp);
+      if (Array.isArray(parsed)) {
+        expenses = parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Storage read failed for expenses:', err);
+    expenses = [];
+  }
+}
+
+initStorage();
+
+// Safe saver for localStorage
 function saveData() {
-  localStorage.setItem('budget', budget);
-  localStorage.setItem('categories', JSON.stringify(categories));
-  localStorage.setItem('expenses', JSON.stringify(expenses));
+  try {
+    localStorage.setItem('budget', String(budget));
+    localStorage.setItem('categories', JSON.stringify(categories));
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+  } catch (err) {
+    console.warn('Storage save failed:', err);
+  }
 }
 
 // =============================================================================
@@ -59,10 +107,9 @@ const CATEGORY_MAP = {
 };
 
 function getCategoryMeta(categoryName) {
-  if (CATEGORY_MAP[categoryName]) {
+  if (categoryName && CATEGORY_MAP[categoryName]) {
     return CATEGORY_MAP[categoryName];
   }
-  // Fallback for custom user categories
   return {
     icon: 'fa-solid fa-tag',
     color: 'var(--brand-600)',
@@ -75,18 +122,20 @@ function formatINR(amount) {
   return '₹' + Number(amount || 0).toLocaleString('en-IN');
 }
 
-// Format date into human-readable string (e.g. "19 Nov 2026")
+// Format date into human-readable string
 function formatDateDisplay(dateString) {
   if (!dateString) return 'No Date';
-  const parts = dateString.split('-');
-  if (parts.length === 3) {
-    const d = new Date(parts[0], parts[1] - 1, parts[2]);
-    if (!isNaN(d.getTime())) {
-      const today = new Date();
-      if (d.toDateString() === today.toDateString()) return 'Today';
-      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  try {
+    const parts = String(dateString).split('-');
+    if (parts.length === 3) {
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      if (!isNaN(d.getTime())) {
+        const today = new Date();
+        if (d.toDateString() === today.toDateString()) return 'Today';
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      }
     }
-  }
+  } catch (e) {}
   return dateString;
 }
 
@@ -103,21 +152,25 @@ function getTodayDateString() {
 // NOTIFICATION & TOAST
 // =============================================================================
 
-function showToast(message, isSuccess = true) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMessage');
+function showToast(message) {
+  try {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMessage');
 
-  if (toastMsg) {
-    toastMsg.innerText = message;
-  } else if (toast) {
-    toast.innerText = message;
-  }
+    if (toastMsg) {
+      toastMsg.innerText = message;
+    } else if (toast) {
+      toast.innerText = message;
+    }
 
-  if (toast) {
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2500);
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+  } catch (e) {
+    console.log('Toast:', message);
   }
 }
 
@@ -126,60 +179,66 @@ function showToast(message, isSuccess = true) {
 // =============================================================================
 
 function openSection(id, element) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  const targetSection = document.getElementById(id);
-  if (targetSection) {
-    targetSection.classList.add('active');
+  try {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const targetSection = document.getElementById(id);
+    if (targetSection) {
+      targetSection.classList.add('active');
+    }
+
+    // Update active status on both sidebar and mobile navigation items
+    document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(nav => {
+      nav.classList.remove('active');
+    });
+
+    // Highlight active tab across desktop and mobile matching the section
+    const sectionIndex = ['dashboard', 'expenses', 'reports', 'settings'].indexOf(id);
+    if (sectionIndex !== -1) {
+      const sidebarItems = document.querySelectorAll('.sidebar-nav .nav-item');
+      if (sidebarItems[sectionIndex]) sidebarItems[sectionIndex].classList.add('active');
+
+      const mobileItems = document.querySelectorAll('.mobile-nav .mobile-nav-item');
+      if (mobileItems[sectionIndex]) mobileItems[sectionIndex].classList.add('active');
+    }
+
+    // If specific element passed, ensure it is active
+    if (element && element.classList) {
+      element.classList.add('active');
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    console.error('Error in openSection:', err);
   }
-
-  // Update active status on both sidebar and mobile navigation items
-  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(nav => {
-    nav.classList.remove('active');
-  });
-
-  // Highlight active tab across desktop and mobile matching the section
-  const sectionIndex = ['dashboard', 'expenses', 'reports', 'settings'].indexOf(id);
-  if (sectionIndex !== -1) {
-    const sidebarItems = document.querySelectorAll('.sidebar-nav .nav-item');
-    if (sidebarItems[sectionIndex]) sidebarItems[sectionIndex].classList.add('active');
-
-    const mobileItems = document.querySelectorAll('.mobile-nav .mobile-nav-item');
-    if (mobileItems[sectionIndex]) mobileItems[sectionIndex].classList.add('active');
-  }
-
-  // If specific element passed, ensure it is active
-  if (element && element.classList) {
-    element.classList.add('active');
-  }
-
-  // Scroll to top smoothly
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function toggleTheme() {
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  try {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch (e) {}
 
-  const themeIcon = document.querySelector('#themeToggle i');
-  if (themeIcon) {
-    themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    const themeIcon = document.querySelector('#themeToggle i');
+    if (themeIcon) {
+      themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  } catch (err) {
+    console.error('Error in toggleTheme:', err);
   }
 }
 
 // Restore saved theme on startup
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark');
-  const themeIcon = document.querySelector('#themeToggle i');
-  if (themeIcon) {
-    themeIcon.className = 'fa-solid fa-sun';
+try {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    const themeIcon = document.querySelector('#themeToggle i');
+    if (themeIcon) {
+      themeIcon.className = 'fa-solid fa-sun';
+    }
   }
-}
-
-const themeBtn = document.getElementById('themeToggle');
-if (themeBtn) {
-  themeBtn.addEventListener('click', toggleTheme);
-}
+} catch (e) {}
 
 // =============================================================================
 // MODALS LOGIC
@@ -189,7 +248,6 @@ function openAddModal() {
   const modal = document.getElementById('addExpenseModal');
   if (!modal) return;
 
-  // Set today's date as default
   const dateInput = document.getElementById('modalExpenseDate');
   if (dateInput && !dateInput.value) {
     dateInput.value = getTodayDateString();
@@ -216,7 +274,7 @@ function closeModal(modalId) {
 }
 
 function closeModalOnBackdrop(event, modalId) {
-  if (event.target.id === modalId) {
+  if (event && event.target && event.target.id === modalId) {
     closeModal(modalId);
   }
 }
@@ -248,10 +306,12 @@ function submitModalExpense() {
   const dateInput = document.getElementById('modalExpenseDate');
   const noteInput = document.getElementById('modalExpenseNote');
 
+  if (!amountInput || !catInput) return;
+
   const amount = Number(amountInput.value);
   const category = catInput.value;
-  const date = dateInput.value || getTodayDateString();
-  const note = noteInput.value.trim();
+  const date = (dateInput && dateInput.value) ? dateInput.value : getTodayDateString();
+  const note = noteInput ? noteInput.value.trim() : '';
 
   if (amount <= 0 || isNaN(amount)) {
     showToast('Please enter a valid amount');
@@ -269,15 +329,15 @@ function submitModalExpense() {
   saveData();
   updateUI();
 
-  // Reset inputs & close modal
   amountInput.value = '';
-  noteInput.value = '';
+  if (noteInput) noteInput.value = '';
   closeModal('addExpenseModal');
   showToast('Expense added successfully');
 }
 
 function submitModalBudget() {
   const input = document.getElementById('modalBudgetInput');
+  if (!input) return;
   const val = Number(input.value);
 
   if (val <= 0 || isNaN(val)) {
@@ -319,6 +379,7 @@ function renderCategoryOptions() {
 function addCategory() {
   const nameInput = document.getElementById('newCategory');
   const allocInput = document.getElementById('newAllocation');
+  if (!nameInput || !allocInput) return;
 
   const name = nameInput.value.trim();
   const allocation = Number(allocInput.value);
@@ -339,7 +400,7 @@ function addCategory() {
     return;
   }
 
-  const currentTotal = categories.reduce((sum, c) => sum + c.allocation, 0);
+  const currentTotal = categories.reduce((sum, c) => sum + Number(c.allocation || 0), 0);
   if (currentTotal + allocation > 100) {
     showToast(`Total allocation would exceed 100% (Available: ${100 - currentTotal}%)`);
     return;
@@ -362,7 +423,7 @@ function updateAllocation(index, value) {
     return;
   }
 
-  const othersSum = categories.reduce((sum, c, i) => (i !== index ? sum + c.allocation : sum), 0);
+  const othersSum = categories.reduce((sum, c, i) => (i !== index ? sum + Number(c.allocation || 0) : sum), 0);
 
   if (othersSum + value > 100) {
     showToast(`Total allocation exceeds 100% (Max allowed: ${100 - othersSum}%)`);
@@ -370,7 +431,9 @@ function updateAllocation(index, value) {
     return;
   }
 
-  categories[index].allocation = value;
+  if (categories[index]) {
+    categories[index].allocation = value;
+  }
   saveData();
   updateUI();
   showToast('Allocation updated');
@@ -394,10 +457,10 @@ function renderCategories() {
   }
 
   categories.forEach((cat, index) => {
-    const allocated = Math.round((budget * cat.allocation) / 100);
+    const allocated = Math.round((budget * (Number(cat.allocation) || 0)) / 100);
     const spentCategory = expenses
       .filter(e => e.category === cat.name)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
     const spentPercentage = allocated > 0 ? Math.min(100, Math.round((spentCategory / allocated) * 100)) : 0;
     const isExceeded = spentCategory > allocated;
@@ -446,6 +509,7 @@ function renderCategories() {
 
 function updateBudget() {
   const input = document.getElementById('budgetInput');
+  if (!input) return;
   const value = Number(input.value);
 
   if (value <= 0 || isNaN(value)) {
@@ -470,10 +534,12 @@ function addExpense() {
   const dateInput = document.getElementById('expenseDate');
   const noteInput = document.getElementById('expenseNote');
 
+  if (!amountInput || !catInput) return;
+
   const amount = Number(amountInput.value);
   const category = catInput.value;
-  const date = dateInput.value || getTodayDateString();
-  const note = noteInput.value.trim();
+  const date = (dateInput && dateInput.value) ? dateInput.value : getTodayDateString();
+  const note = noteInput ? noteInput.value.trim() : '';
 
   if (amount <= 0 || isNaN(amount)) {
     showToast('Please enter a valid expense amount');
@@ -492,7 +558,7 @@ function addExpense() {
   updateUI();
 
   amountInput.value = '';
-  noteInput.value = '';
+  if (noteInput) noteInput.value = '';
   showToast('Expense recorded');
 }
 
@@ -507,7 +573,6 @@ function deleteExpense(index) {
 
 function renderExpenses() {
   const recentContainer = document.getElementById('recentExpenses');
-  const fullContainer = document.getElementById('expenseList');
 
   // 1. Render Recent Expenses on Dashboard (max 5)
   if (recentContainer) {
@@ -647,109 +712,113 @@ function exportExpensesToCSV() {
 // =============================================================================
 
 function updateStats() {
-  const totalSpent = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  const remaining = budget - totalSpent;
-  const savingsRate = budget > 0 ? Math.max(0, Math.round((remaining / budget) * 100)) : 0;
-  const spentRate = budget > 0 ? Math.round((totalSpent / budget) * 100) : 0;
+  try {
+    const totalSpent = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const remaining = budget - totalSpent;
+    const savingsRate = budget > 0 ? Math.max(0, Math.round((remaining / budget) * 100)) : 0;
+    const spentRate = budget > 0 ? Math.round((totalSpent / budget) * 100) : 0;
 
-  // 1. Dashboard Values
-  const budgetElem = document.getElementById('budgetDisplay');
-  const spentElem = document.getElementById('spentDisplay');
-  const remainingElem = document.getElementById('remainingDisplay');
-  const savingsElem = document.getElementById('savingsDisplay');
-  const savingsBar = document.getElementById('savingsBar');
+    // 1. Dashboard Values
+    const budgetElem = document.getElementById('budgetDisplay');
+    const spentElem = document.getElementById('spentDisplay');
+    const remainingElem = document.getElementById('remainingDisplay');
+    const savingsElem = document.getElementById('savingsDisplay');
+    const savingsBar = document.getElementById('savingsBar');
 
-  if (budgetElem) budgetElem.innerText = formatINR(budget);
-  if (spentElem) spentElem.innerText = formatINR(totalSpent);
-  if (remainingElem) remainingElem.innerText = formatINR(remaining);
-  if (savingsElem) savingsElem.innerText = `${savingsRate}%`;
+    if (budgetElem) budgetElem.innerText = formatINR(budget);
+    if (spentElem) spentElem.innerText = formatINR(totalSpent);
+    if (remainingElem) remainingElem.innerText = formatINR(remaining);
+    if (savingsElem) savingsElem.innerText = `${savingsRate}%`;
 
-  if (savingsBar) {
-    savingsBar.style.width = `${savingsRate}%`;
-    savingsBar.className = `progress-fill ${savingsRate > 50 ? 'success' : savingsRate > 20 ? 'warning' : 'danger'}`;
-  }
-
-  // 2. Spent Badge & Burn Rate
-  const spentBadge = document.getElementById('spentPercentageBadge');
-  if (spentBadge) {
-    spentBadge.innerText = `${spentRate}% of limit`;
-    spentBadge.className = `metric-badge ${spentRate > 90 ? 'danger' : spentRate > 75 ? 'warning' : 'neutral'}`;
-  }
-
-  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-  const currentDay = new Date().getDate();
-  const daysLeft = Math.max(1, daysInMonth - currentDay);
-  const dailyBurn = Math.round(totalSpent / Math.max(1, currentDay));
-
-  const burnRateElem = document.getElementById('dailyBurnRate');
-  if (burnRateElem) burnRateElem.innerText = `~${formatINR(dailyBurn)}/day`;
-
-  // 3. Remaining Status Badge
-  const remBadge = document.getElementById('remainingStatusBadge');
-  if (remBadge) {
-    if (remaining < 0) {
-      remBadge.innerText = 'Over Budget';
-      remBadge.className = 'metric-badge danger';
-    } else if (remaining < budget * 0.2) {
-      remBadge.innerText = 'Low Cushion';
-      remBadge.className = 'metric-badge warning';
-    } else {
-      remBadge.innerText = 'On Track';
-      remBadge.className = 'metric-badge positive';
+    if (savingsBar) {
+      savingsBar.style.width = `${savingsRate}%`;
+      savingsBar.className = `progress-fill ${savingsRate > 50 ? 'success' : savingsRate > 20 ? 'warning' : 'danger'}`;
     }
+
+    // 2. Spent Badge & Burn Rate
+    const spentBadge = document.getElementById('spentPercentageBadge');
+    if (spentBadge) {
+      spentBadge.innerText = `${spentRate}% of limit`;
+      spentBadge.className = `metric-badge ${spentRate > 90 ? 'danger' : spentRate > 75 ? 'warning' : 'neutral'}`;
+    }
+
+    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    const currentDay = new Date().getDate();
+    const daysLeft = Math.max(1, daysInMonth - currentDay);
+    const dailyBurn = Math.round(totalSpent / Math.max(1, currentDay));
+
+    const burnRateElem = document.getElementById('dailyBurnRate');
+    if (burnRateElem) burnRateElem.innerText = `~${formatINR(dailyBurn)}/day`;
+
+    // 3. Remaining Status Badge
+    const remBadge = document.getElementById('remainingStatusBadge');
+    if (remBadge) {
+      if (remaining < 0) {
+        remBadge.innerText = 'Over Budget';
+        remBadge.className = 'metric-badge danger';
+      } else if (remaining < budget * 0.2) {
+        remBadge.innerText = 'Low Cushion';
+        remBadge.className = 'metric-badge warning';
+      } else {
+        remBadge.innerText = 'On Track';
+        remBadge.className = 'metric-badge positive';
+      }
+    }
+
+    // 4. Reports Tab Metrics
+    const reportSpent = document.getElementById('reportSpent');
+    if (reportSpent) reportSpent.innerText = formatINR(totalSpent);
+
+    // Top Category Calculation
+    let topCategoryName = 'None';
+    const categoryTotals = {};
+
+    expenses.forEach(exp => {
+      const amt = Number(exp.amount || 0);
+      categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + amt;
+    });
+
+    const catKeys = Object.keys(categoryTotals);
+    if (catKeys.length > 0) {
+      topCategoryName = catKeys.reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b);
+    }
+
+    const topCatElem = document.getElementById('topCategory');
+    if (topCatElem) {
+      topCatElem.innerText = topCategoryName !== 'None'
+        ? `${topCategoryName} (${formatINR(categoryTotals[topCategoryName])})`
+        : 'None';
+    }
+
+    // Budget Health Status
+    let healthScore = 'Excellent';
+    let healthClass = 'positive';
+
+    if (remaining < 0) {
+      healthScore = 'Deficit';
+      healthClass = 'danger';
+    } else if (savingsRate < 25) {
+      healthScore = 'Tight';
+      healthClass = 'warning';
+    } else if (savingsRate < 50) {
+      healthScore = 'Moderate';
+      healthClass = 'warning';
+    }
+
+    const healthElem = document.getElementById('budgetHealth');
+    const healthBadge = document.getElementById('budgetHealthBadge');
+    if (healthElem) healthElem.innerText = healthScore;
+    if (healthBadge) {
+      healthBadge.innerText = healthScore === 'Excellent' ? 'Strong Buffer' : healthScore === 'Deficit' ? 'Exceeded Limit' : 'Watch Daily Spend';
+      healthBadge.className = `metric-badge ${healthClass}`;
+    }
+
+    renderSuggestions(totalSpent, remaining, dailyBurn, daysLeft, topCategoryName);
+    renderNotifications(totalSpent);
+    renderAnalyticsBreakdown(totalSpent, categoryTotals);
+  } catch (err) {
+    console.error('Error in updateStats:', err);
   }
-
-  // 4. Reports Tab Metrics
-  const reportSpent = document.getElementById('reportSpent');
-  if (reportSpent) reportSpent.innerText = formatINR(totalSpent);
-
-  // Top Category Calculation
-  let topCategoryName = 'None';
-  const categoryTotals = {};
-
-  expenses.forEach(exp => {
-    categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
-  });
-
-  const catKeys = Object.keys(categoryTotals);
-  if (catKeys.length > 0) {
-    topCategoryName = catKeys.reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b);
-  }
-
-  const topCatElem = document.getElementById('topCategory');
-  if (topCatElem) {
-    topCatElem.innerText = topCategoryName !== 'None'
-      ? `${topCategoryName} (${formatINR(categoryTotals[topCategoryName])})`
-      : 'None';
-  }
-
-  // Budget Health Status
-  let healthScore = 'Excellent';
-  let healthClass = 'positive';
-
-  if (remaining < 0) {
-    healthScore = 'Deficit';
-    healthClass = 'danger';
-  } else if (savingsRate < 25) {
-    healthScore = 'Tight';
-    healthClass = 'warning';
-  } else if (savingsRate < 50) {
-    healthScore = 'Moderate';
-    healthClass = 'warning';
-  }
-
-  const healthElem = document.getElementById('budgetHealth');
-  const healthBadge = document.getElementById('budgetHealthBadge');
-  if (healthElem) healthElem.innerText = healthScore;
-  if (healthBadge) {
-    healthBadge.innerText = healthScore === 'Excellent' ? 'Strong Buffer' : healthScore === 'Deficit' ? 'Exceeded Limit' : 'Watch Daily Spend';
-    healthBadge.className = `metric-badge ${healthClass}`;
-  }
-
-  // Render Smart Insights & Notifications
-  renderSuggestions(totalSpent, remaining, dailyBurn, daysLeft, topCategoryName);
-  renderNotifications(totalSpent);
-  renderAnalyticsBreakdown(totalSpent, categoryTotals);
 }
 
 // =============================================================================
@@ -830,10 +899,10 @@ function renderNotifications(spent) {
   }
 
   categories.forEach(cat => {
-    const allocated = (budget * cat.allocation) / 100;
+    const allocated = (budget * (Number(cat.allocation) || 0)) / 100;
     const spentCategory = expenses
       .filter(e => e.category === cat.name)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
     if (spentCategory > allocated) {
       notices.push({
@@ -939,16 +1008,12 @@ function resetAllData() {
   const confirmSecond = confirm('This will permanently delete all expenses and restore default student categories. Proceed?');
   if (!confirmSecond) return;
 
-  localStorage.clear();
+  try {
+    localStorage.clear();
+  } catch (e) {}
 
   budget = 15000;
-  categories = [
-    { name: 'Food', allocation: 30 },
-    { name: 'Transport', allocation: 20 },
-    { name: 'Shopping', allocation: 20 },
-    { name: 'Study', allocation: 15 },
-    { name: 'Entertainment', allocation: 15 }
-  ];
+  categories = [...DEFAULT_CATEGORIES];
   expenses = [];
 
   updateUI();
@@ -960,23 +1025,71 @@ function resetAllData() {
 // =============================================================================
 
 function updateUI() {
-  renderCategoryOptions();
-  renderCategories();
-  renderExpenses();
-  updateStats();
-  saveData();
+  try {
+    renderCategoryOptions();
+    renderCategories();
+    renderExpenses();
+    updateStats();
+    saveData();
+  } catch (err) {
+    console.error('Error during updateUI:', err);
+  }
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-  // Set default dates
+// =============================================================================
+// EXPLICIT GLOBAL WINDOW BINDINGS
+// Ensures all handlers are reachable by inline onclick attributes in any environment
+// =============================================================================
+
+window.openSection = openSection;
+window.openAddModal = openAddModal;
+window.openEditBudgetModal = openEditBudgetModal;
+window.closeModal = closeModal;
+window.closeModalOnBackdrop = closeModalOnBackdrop;
+window.addExpense = addExpense;
+window.deleteExpense = deleteExpense;
+window.updateBudget = updateBudget;
+window.addCategory = addCategory;
+window.updateAllocation = updateAllocation;
+window.resetAllData = resetAllData;
+window.setQuickAmount = setQuickAmount;
+window.setModalQuickAmount = setModalQuickAmount;
+window.setBudgetPreset = setBudgetPreset;
+window.submitModalExpense = submitModalExpense;
+window.submitModalBudget = submitModalBudget;
+window.filterExpensesList = filterExpensesList;
+window.exportExpensesToCSV = exportExpensesToCSV;
+window.toggleTheme = toggleTheme;
+
+// =============================================================================
+// DOM READY & EVENT ATTACHMENT
+// =============================================================================
+
+function attachEventListeners() {
+  // Theme toggle button
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.onclick = toggleTheme;
+  }
+
+  // Set default expense date
   const expenseDateInput = document.getElementById('expenseDate');
   if (expenseDateInput && !expenseDateInput.value) {
     expenseDateInput.value = getTodayDateString();
   }
 
-  updateUI();
-});
+  const modalDateInput = document.getElementById('modalExpenseDate');
+  if (modalDateInput && !modalDateInput.value) {
+    modalDateInput.value = getTodayDateString();
+  }
+}
 
-// Run immediate update for fast paint
-updateUI();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    attachEventListeners();
+    updateUI();
+  });
+} else {
+  attachEventListeners();
+  updateUI();
+}
