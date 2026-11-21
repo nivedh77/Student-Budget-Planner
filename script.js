@@ -21,7 +21,7 @@ let categories = [...DEFAULT_CATEGORIES];
 let expenses = [];
 let userProfile = {
   name: '',
-  tagline: 'Personal Edition'
+  tagline: 'Student Edition'
 };
 
 // Safe reader for localStorage to avoid crashing on SecurityError or corrupted JSON
@@ -71,7 +71,7 @@ function initStorage() {
       if (parsedProf && typeof parsedProf === 'object') {
         userProfile = {
           name: parsedProf.name || '',
-          tagline: parsedProf.tagline || 'Personal Edition'
+          tagline: parsedProf.tagline || 'Student Edition'
         };
       }
     }
@@ -101,7 +101,7 @@ function saveUserProfile() {
   if (!nameInput) return;
 
   userProfile.name = nameInput.value.trim();
-  userProfile.tagline = taglineInput && taglineInput.value.trim() ? taglineInput.value.trim() : 'Personal Edition';
+  userProfile.tagline = taglineInput && taglineInput.value.trim() ? taglineInput.value.trim() : 'Student Edition';
 
   saveData();
   updateProfileDisplay();
@@ -116,8 +116,8 @@ function updateProfileDisplay() {
   const nameInput = document.getElementById('userNameInput');
   const taglineInput = document.getElementById('userTaglineInput');
 
-  const displayName = userProfile.name || 'My Budget';
-  const displayTagline = userProfile.tagline || 'Personal Edition';
+  const displayName = userProfile.name || 'Student Plan';
+  const displayTagline = userProfile.tagline || 'Student Edition';
   const initial = userProfile.name ? userProfile.name.charAt(0).toUpperCase() : 'S';
 
   if (nameElem) nameElem.textContent = displayName;
@@ -147,8 +147,8 @@ const CATEGORY_MAP = {
   },
   'Transport': {
     icon: 'fa-solid fa-bus-simple',
-    color: '#6366f1',
-    bg: '#e0e7ff'
+    color: '#0284c7',
+    bg: '#e0f2fe'
   },
   'Shopping': {
     icon: 'fa-solid fa-bag-shopping',
@@ -168,7 +168,7 @@ const CATEGORY_MAP = {
 };
 
 const EXTRA_PALETTES = [
-  { color: '#0d9488', bg: '#ccfbf1' },
+  { color: '#2563eb', bg: '#dbeafe' },
   { color: '#059669', bg: '#d1fae5' },
   { color: '#d97706', bg: '#fef3c7' },
   { color: '#7c3aed', bg: '#ede9fe' },
@@ -343,7 +343,6 @@ function openAddModal() {
   if (dateInput && !dateInput.value) {
     dateInput.value = getTodayDateString();
   }
-  syncDatePresetUI('modalExpenseDate');
 
   modal.classList.add('show');
   setTimeout(() => {
@@ -403,7 +402,6 @@ function setDatePreset(preset) {
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   input.value = `${year}-${month}-${day}`;
-  syncDatePresetUI('expenseDate');
 }
 
 function setModalDatePreset(preset) {
@@ -417,34 +415,6 @@ function setModalDatePreset(preset) {
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   input.value = `${year}-${month}-${day}`;
-  syncDatePresetUI('modalExpenseDate');
-}
-
-function handleDateChange(inputId) {
-  syncDatePresetUI(inputId);
-}
-
-function syncDatePresetUI(inputId) {
-  const isModal = inputId === 'modalExpenseDate';
-  const input = document.getElementById(inputId);
-  if (!input) return;
-
-  const todayStr = getTodayDateString();
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-
-  const chipToday = document.getElementById(isModal ? 'modalChipToday' : 'chipToday');
-  const chipYesterday = document.getElementById(isModal ? 'modalChipYesterday' : 'chipYesterday');
-
-  if (chipToday) chipToday.classList.remove('active');
-  if (chipYesterday) chipYesterday.classList.remove('active');
-
-  if (input.value === todayStr && chipToday) {
-    chipToday.classList.add('active');
-  } else if (input.value === yStr && chipYesterday) {
-    chipYesterday.classList.add('active');
-  }
 }
 
 function submitModalExpense() {
@@ -1262,7 +1232,6 @@ window.setModalQuickAmount = setModalQuickAmount;
 window.setBudgetPreset = setBudgetPreset;
 window.setDatePreset = setDatePreset;
 window.setModalDatePreset = setModalDatePreset;
-window.handleDateChange = handleDateChange;
 window.saveUserProfile = saveUserProfile;
 window.submitModalExpense = submitModalExpense;
 window.submitModalBudget = submitModalBudget;
@@ -1291,9 +1260,6 @@ function attachEventListeners() {
   if (modalDateInput && !modalDateInput.value) {
     modalDateInput.value = getTodayDateString();
   }
-
-  syncDatePresetUI('expenseDate');
-  syncDatePresetUI('modalExpenseDate');
 }
 
 if (document.readyState === 'loading') {

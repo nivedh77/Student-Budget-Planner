@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SPENDORA — Personal Budget Planner</title>
+  <title>SPENDORA — Student Budget Planner</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
   <link rel="stylesheet" href="style.css">
@@ -27,8 +27,13 @@
     <aside class="sidebar">
       <div>
         <div class="brand">
-          <i class="fa-solid fa-wallet brand-logo-icon"></i>
-          <span class="brand-title">SPENDORA</span>
+          <div class="brand-icon">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div class="brand-info">
+            <h1>SPENDORA</h1>
+            <span class="brand-badge">Student Budget</span>
+          </div>
         </div>
 
         <nav class="sidebar-nav">
@@ -55,8 +60,8 @@
         <div class="user-card">
           <div class="user-avatar" id="sidebarUserAvatar">S</div>
           <div class="user-details">
-            <div class="user-name" id="sidebarUserName">My Budget</div>
-            <div class="user-status" id="sidebarUserTagline">Personal Edition</div>
+            <div class="user-name" id="sidebarUserName">Student Plan</div>
+            <div class="user-status" id="sidebarUserTagline">Student Edition</div>
           </div>
         </div>
       </div>
@@ -67,7 +72,7 @@
       <header class="header">
         <div class="header-greeting">
           <h2 id="pageGreeting">Welcome back 👋</h2>
-          <p id="pageSubGreeting">Budget overview & tracking</p>
+          <p id="pageSubGreeting">Student budget overview</p>
         </div>
 
         <div class="header-actions">
@@ -90,7 +95,7 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Monthly Budget</span>
-                <div class="metric-icon-box emerald">
+                <div class="metric-icon-box blue">
                   <i class="fa-solid fa-wallet"></i>
                 </div>
               </div>
@@ -206,19 +211,10 @@
 
               <div class="form-group">
                 <label>Date</label>
-                <div class="date-picker-container">
-                  <i class="fa-solid fa-calendar-day date-input-icon"></i>
-                  <input
-                    class="input date-picker with-icon"
-                    id="expenseDate"
-                    type="date"
-                    onclick="if(typeof this.showPicker === 'function') this.showPicker()"
-                    onchange="handleDateChange('expenseDate')"
-                  >
-                </div>
+                <input class="input date-picker" id="expenseDate" type="date">
                 <div class="chip-row">
-                  <button type="button" class="chip active" id="chipToday" onclick="setDatePreset('today')">Today</button>
-                  <button type="button" class="chip" id="chipYesterday" onclick="setDatePreset('yesterday')">Yesterday</button>
+                  <button type="button" class="chip" onclick="setDatePreset('today')">Today</button>
+                  <button type="button" class="chip" onclick="setDatePreset('yesterday')">Yesterday</button>
                 </div>
               </div>
 
@@ -328,8 +324,8 @@
                 <input class="input" id="userNameInput" placeholder="Enter your name (e.g. Alex)">
               </div>
               <div class="form-group">
-                <label>Tagline / Description</label>
-                <input class="input" id="userTaglineInput" placeholder="e.g. Personal Edition">
+                <label>College / Status Tagline</label>
+                <input class="input" id="userTaglineInput" placeholder="e.g. Student • Semester 4">
               </div>
               <button class="btn btn-primary" onclick="saveUserProfile()">Save Profile</button>
             </div>
@@ -390,7 +386,7 @@
               <h3 style="color: #dc2626;">Reset All Data</h3>
             </div>
             <div class="danger-row">
-              <p>Permanently delete all expenses and restore default categories.</p>
+              <p>Permanently delete all expenses and restore default student categories.</p>
               <button class="btn btn-danger" onclick="resetAllData()">Reset Everything</button>
             </div>
           </div>
@@ -428,19 +424,10 @@
 
         <div class="form-group">
           <label>Date</label>
-          <div class="date-picker-container">
-            <i class="fa-solid fa-calendar-day date-input-icon"></i>
-            <input
-              class="input date-picker with-icon"
-              id="modalExpenseDate"
-              type="date"
-              onclick="if(typeof this.showPicker === 'function') this.showPicker()"
-              onchange="handleDateChange('modalExpenseDate')"
-            >
-          </div>
+          <input class="input date-picker" id="modalExpenseDate" type="date">
           <div class="chip-row">
-            <button type="button" class="chip active" id="modalChipToday" onclick="setModalDatePreset('today')">Today</button>
-            <button type="button" class="chip" id="modalChipYesterday" onclick="setModalDatePreset('yesterday')">Yesterday</button>
+            <button type="button" class="chip" onclick="setModalDatePreset('today')">Today</button>
+            <button type="button" class="chip" onclick="setModalDatePreset('yesterday')">Yesterday</button>
           </div>
         </div>
 
