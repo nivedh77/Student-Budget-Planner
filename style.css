@@ -5,9 +5,9 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f1f5f9;
+  color: #1e293b;
   min-height: 100vh;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
@@ -18,7 +18,7 @@ button, input, select {
   color: inherit;
 }
 
-/* Layout */
+/* App Shell Layout */
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -40,6 +40,7 @@ button, input, select {
   z-index: 40;
 }
 
+/* Coloured Brand Logo */
 .brand {
   display: flex;
   align-items: center;
@@ -50,40 +51,44 @@ button, input, select {
 }
 
 .brand-icon {
-  width: 38px;
-  height: 38px;
-  background-color: #0f172a;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .brand:hover .brand-icon {
-  transform: scale(1.05);
+  transform: scale(1.06) rotate(3deg);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
 .brand-info h1 {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 800;
   letter-spacing: -0.01em;
+  color: #0f172a;
+  line-height: 1.15;
 }
 
 .brand-badge {
   font-size: 11px;
-  color: #64748b;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  color: #2563eb;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
   padding: 2px 8px;
   border-radius: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Navigation Links with Hover */
+/* Navigation Links */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -94,7 +99,7 @@ button, input, select {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: 8px;
   color: #475569;
   font-size: 14px;
@@ -107,23 +112,26 @@ button, input, select {
   font-size: 16px;
   width: 20px;
   text-align: center;
-  transition: transform 0.2s ease;
+  color: #64748b;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .nav-item:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: #eff6ff;
+  color: #2563eb;
   transform: translateX(4px);
 }
 
 .nav-item:hover i {
-  transform: scale(1.1);
+  color: #2563eb;
+  transform: scale(1.12);
 }
 
 .nav-item.active {
-  background-color: #0f172a;
+  background-color: #2563eb;
   color: #ffffff;
   font-weight: 600;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
   transform: none;
 }
 
@@ -131,7 +139,7 @@ button, input, select {
   color: #ffffff;
 }
 
-/* User Card */
+/* User Profile Card */
 .user-card {
   display: flex;
   align-items: center;
@@ -145,20 +153,21 @@ button, input, select {
 
 .user-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background-color: #e2e8f0;
-  color: #0f172a;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .user-details {
@@ -168,6 +177,7 @@ button, input, select {
 .user-name {
   font-size: 13px;
   font-weight: 600;
+  color: #0f172a;
 }
 
 .user-status {
@@ -190,7 +200,7 @@ button, input, select {
 }
 
 .header-greeting h2 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -204,10 +214,10 @@ button, input, select {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* Sections */
+/* Content Views */
 .content {
   width: 100%;
 }
@@ -220,7 +230,7 @@ button, input, select {
   display: block;
 }
 
-/* Grids */
+/* Responsive Grids */
 .grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -253,11 +263,11 @@ button, input, select {
   gap: 20px;
 }
 
-/* Cards with Interactive Hover Effect */
+/* Cards with Interactive Hover */
 .card {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -265,7 +275,7 @@ button, input, select {
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   border-color: #cbd5e1;
 }
 
@@ -297,15 +307,56 @@ button, input, select {
   color: #64748b;
 }
 
-.icon-muted {
+/* Coloured Metric Icon Boxes */
+.metric-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 15px;
-  color: #94a3b8;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
-.card:hover .icon-muted {
-  transform: scale(1.12);
-  color: #0f172a;
+.card:hover .metric-icon-box {
+  transform: scale(1.1);
+}
+
+.metric-icon-box.amber {
+  background-color: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.metric-icon-box.red {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.metric-icon-box.green {
+  background-color: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.metric-icon-box.blue {
+  background-color: #dbeafe;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.metric-icon-box.purple {
+  background-color: #f3e8ff;
+  color: #9333ea;
+  border: 1px solid #e9d5ff;
+}
+
+.metric-icon-box.orange {
+  background-color: #ffedd5;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
 }
 
 .metric-number {
@@ -331,7 +382,7 @@ button, input, select {
 /* Badges */
 .badge {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
@@ -361,18 +412,18 @@ button, input, select {
   border: 1px solid #e2e8f0;
 }
 
-/* Buttons with Dynamic Hover & Click States */
+/* Buttons (Vibrant Royal Blue & Red) */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
   font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .btn:active {
@@ -380,17 +431,17 @@ button, input, select {
 }
 
 .btn-primary {
-  background-color: #0f172a;
+  background-color: #2563eb;
   color: #ffffff;
-  border-color: #0f172a;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  border-color: #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: #1e293b;
-  border-color: #1e293b;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn-secondary {
@@ -401,25 +452,25 @@ button, input, select {
 
 .btn-secondary:hover {
   background-color: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
+  border-color: #2563eb;
+  color: #2563eb;
   transform: translateY(-1px);
 }
 
 .btn-danger {
-  background-color: #ef4444;
+  background-color: #dc2626;
   color: #ffffff;
 }
 
 .btn-danger:hover {
-  background-color: #dc2626;
+  background-color: #b91c1c;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
 }
 
 .btn-icon {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   justify-content: center;
   background-color: #ffffff;
@@ -429,16 +480,16 @@ button, input, select {
 }
 
 .btn-icon:hover {
-  background-color: #f1f5f9;
-  border-color: #94a3b8;
-  color: #0f172a;
+  background-color: #eff6ff;
+  border-color: #2563eb;
+  color: #2563eb;
   transform: translateY(-1px) rotate(12deg);
 }
 
 .btn-text {
   background: none;
   border: none;
-  color: #0f172a;
+  color: #2563eb;
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
@@ -448,11 +499,11 @@ button, input, select {
 }
 
 .btn-text:hover {
-  color: #475569;
+  color: #1d4ed8;
 }
 
 .btn-sm {
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-size: 12px;
 }
 
@@ -474,13 +525,13 @@ button, input, select {
 }
 
 .btn-close:hover {
-  color: #0f172a;
-  background-color: #f1f5f9;
+  color: #dc2626;
+  background-color: #fee2e2;
 }
 
-/* Forms & Inputs */
+/* Forms & Clean Inputs */
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
@@ -493,19 +544,65 @@ button, input, select {
 
 .input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13.5px;
   outline: none;
   background-color: #ffffff;
   color: #0f172a;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #0f172a;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Beautiful Date Picker & Calendar Styling */
+.date-picker {
+  cursor: pointer;
+  position: relative;
+  background-color: #ffffff;
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.35) sepia(100%) saturate(600%) hue-rotate(190deg);
+  opacity: 0.85;
+  padding: 4px;
+  border-radius: 4px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.date-picker::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.date-row-helper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-date-preset {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-date-preset:hover {
+  background: #e2e8f0;
+  border-color: #2563eb;
+  color: #2563eb;
 }
 
 .chip-row {
@@ -516,11 +613,11 @@ button, input, select {
 }
 
 .chip {
-  padding: 5px 10px;
+  padding: 5px 12px;
   background-color: #f8fafc;
   border: 1px solid #cbd5e1;
-  border-radius: 14px;
-  font-size: 11.5px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 500;
   color: #334155;
   cursor: pointer;
@@ -528,26 +625,26 @@ button, input, select {
 }
 
 .chip:hover {
-  background-color: #e2e8f0;
-  border-color: #94a3b8;
-  color: #0f172a;
+  background-color: #eff6ff;
+  border-color: #2563eb;
+  color: #2563eb;
   transform: translateY(-1px);
 }
 
 /* Progress Bars */
 .progress-bar {
   width: 100%;
-  height: 7px;
+  height: 8px;
   background-color: #e2e8f0;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #0f172a;
-  border-radius: 4px;
+  background-color: #2563eb;
+  border-radius: 6px;
   transition: width 0.3s ease;
 }
 
@@ -565,9 +662,9 @@ button, input, select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 8px;
+  padding: 12px 10px;
   border-bottom: 1px solid #f1f5f9;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: background-color 0.15s ease, padding 0.15s ease;
 }
 
@@ -577,8 +674,8 @@ button, input, select {
 
 .expense-item:hover {
   background-color: #f8fafc;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 14px;
+  padding-right: 14px;
 }
 
 .expense-left {
@@ -587,22 +684,21 @@ button, input, select {
   gap: 12px;
 }
 
+/* Coloured Category Icon Badges */
 .category-icon-box {
-  width: 34px;
-  height: 34px;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #475569;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
 .expense-item:hover .category-icon-box {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .expense-meta {
@@ -641,7 +737,7 @@ button, input, select {
   color: #94a3b8;
   cursor: pointer;
   padding: 6px;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.15s ease;
 }
 
@@ -649,6 +745,44 @@ button, input, select {
   color: #dc2626;
   background-color: #fee2e2;
   transform: scale(1.15);
+}
+
+.text-danger {
+  color: #dc2626 !important;
+}
+
+.text-danger:hover {
+  color: #b91c1c !important;
+}
+
+/* Category Management in Settings */
+.category-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.category-manage-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.category-manage-item:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.category-manage-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* Category Progress Rows */
@@ -674,18 +808,18 @@ button, input, select {
 }
 
 .category-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
   margin-right: 6px;
 }
 
 .allocation-input-pill {
-  width: 52px;
+  width: 54px;
   padding: 4px 6px;
   border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   text-align: center;
   font-weight: 600;
@@ -694,7 +828,7 @@ button, input, select {
 }
 
 .allocation-input-pill:focus {
-  border-color: #0f172a;
+  border-color: #2563eb;
 }
 
 .search-bar {
@@ -709,11 +843,11 @@ button, input, select {
   gap: 10px;
   padding: 12px 14px;
   background-color: #f8fafc;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 8px;
   font-size: 12.5px;
   color: #475569;
-  border-left: 3px solid #0f172a;
+  border-left: 3px solid #2563eb;
   transition: transform 0.15s ease;
 }
 
@@ -767,7 +901,7 @@ button, input, select {
   background-color: #ffffff;
   width: 100%;
   max-width: 440px;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 24px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
@@ -792,7 +926,7 @@ button, input, select {
   margin-top: 20px;
 }
 
-/* Toast */
+/* Toast Notification */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -802,10 +936,10 @@ button, input, select {
 }
 
 .toast {
-  background-color: #0f172a;
+  background-color: #1e293b;
   color: #ffffff;
   padding: 10px 18px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   opacity: 0;
@@ -813,6 +947,7 @@ button, input, select {
   transition: opacity 0.2s, transform 0.2s;
   pointer-events: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #2563eb;
 }
 
 .toast.show {
@@ -831,7 +966,7 @@ button, input, select {
 }
 
 /* ==========================================================================
-   DARK THEME
+   DARK THEME (Deep Slate Navy & Blue Glow)
    ========================================================================== */
 body.dark {
   background-color: #0b0f19;
@@ -846,7 +981,7 @@ body.dark .modal-dialog {
 }
 
 body.dark .card:hover {
-  border-color: #374151;
+  border-color: #3b82f6;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
@@ -855,7 +990,8 @@ body.dark .card-header h3,
 body.dark .metric-number,
 body.dark .expense-category-name,
 body.dark .expense-amount,
-body.dark .modal-header h3 {
+body.dark .modal-header h3,
+body.dark .brand-info h1 {
   color: #f8fafc;
 }
 
@@ -864,91 +1000,85 @@ body.dark .nav-item {
 }
 
 body.dark .nav-item:hover {
-  background-color: #1f2937;
-  color: #ffffff;
+  background-color: #1e293b;
+  color: #38bdf8;
 }
 
 body.dark .nav-item.active {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #2563eb;
+  color: #ffffff;
 }
 
 body.dark .nav-item.active i {
-  color: #0f172a;
-}
-
-body.dark .brand-icon {
-  background-color: #f8fafc;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 body.dark .brand-badge {
-  background-color: #1f2937;
-  border-color: #374151;
-  color: #94a3b8;
+  background-color: #1e293b;
+  border-color: #3b82f6;
+  color: #60a5fa;
 }
 
 body.dark .btn-primary {
-  background-color: #f8fafc;
-  color: #0f172a;
-  border-color: #f8fafc;
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
 }
 
 body.dark .btn-primary:hover {
-  background-color: #e2e8f0;
-  border-color: #e2e8f0;
+  background-color: #1d4ed8;
 }
 
 body.dark .btn-secondary,
 body.dark .btn-icon,
 body.dark .chip,
-body.dark .user-card,
-body.dark .category-icon-box {
-  background-color: #1f2937;
-  border-color: #374151;
+body.dark .user-card {
+  background-color: #1e293b;
+  border-color: #334155;
   color: #f8fafc;
 }
 
 body.dark .btn-secondary:hover,
 body.dark .btn-icon:hover,
 body.dark .chip:hover {
-  background-color: #374151;
-  color: #ffffff;
+  background-color: #334155;
+  color: #60a5fa;
+  border-color: #3b82f6;
 }
 
 body.dark .input {
-  background-color: #1f2937;
-  border-color: #374151;
+  background-color: #1e293b;
+  border-color: #334155;
   color: #f8fafc;
 }
 
 body.dark .input:focus {
-  border-color: #f8fafc;
-  box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+body.dark .date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 body.dark .btn-text {
-  color: #f8fafc;
+  color: #60a5fa;
 }
 
 body.dark .progress-bar {
-  background-color: #1f2937;
-}
-
-body.dark .progress-fill {
-  background-color: #f8fafc;
+  background-color: #1e293b;
 }
 
 body.dark .badge.neutral {
-  background-color: #1f2937;
-  border-color: #374151;
+  background-color: #1e293b;
+  border-color: #334155;
   color: #94a3b8;
 }
 
 body.dark .insight-card {
-  background-color: #1f2937;
+  background-color: #1e293b;
   color: #cbd5e1;
-  border-left-color: #f8fafc;
+  border-left-color: #3b82f6;
 }
 
 body.dark .card-danger {
@@ -958,15 +1088,25 @@ body.dark .card-danger {
 
 body.dark .expense-item,
 body.dark .category-item {
-  border-bottom-color: #1f2937;
+  border-bottom-color: #1e293b;
 }
 
 body.dark .expense-item:hover {
   background-color: #172033;
 }
 
+body.dark .category-manage-item {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+body.dark .category-manage-item:hover {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
 /* ==========================================================================
-   RESPONSIVE (Mobile)
+   MOBILE RESPONSIVENESS (< 768px)
    ========================================================================== */
 @media (max-width: 900px) {
   .grid-4 {
@@ -987,16 +1127,18 @@ body.dark .expense-item:hover {
 
   .main {
     margin-left: 0;
-    padding: 18px 16px;
-    padding-bottom: 80px;
+    padding: 16px 14px;
+    padding-bottom: 84px;
   }
 
   .grid-4 {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .grid-3 {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .mobile-nav {
@@ -1005,12 +1147,13 @@ body.dark .expense-item:hover {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 62px;
     background-color: #ffffff;
     border-top: 1px solid #e2e8f0;
     z-index: 50;
     justify-content: space-around;
     align-items: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   }
 
   body.dark .mobile-nav {
@@ -1024,7 +1167,7 @@ body.dark .expense-item:hover {
     align-items: center;
     gap: 4px;
     font-size: 11px;
-    color: #94a3b8;
+    color: #64748b;
     cursor: pointer;
     flex: 1;
     padding: 8px 0;
@@ -1032,16 +1175,16 @@ body.dark .expense-item:hover {
   }
 
   .mobile-nav-item:hover {
-    color: #0f172a;
+    color: #2563eb;
   }
 
   .mobile-nav-item.active {
-    color: #0f172a;
+    color: #2563eb;
     font-weight: 600;
   }
 
   body.dark .mobile-nav-item.active {
-    color: #f8fafc;
+    color: #60a5fa;
   }
 
   .mobile-fab {
@@ -1049,27 +1192,22 @@ body.dark .expense-item:hover {
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: 74px;
-    right: 20px;
-    width: 48px;
-    height: 48px;
+    bottom: 76px;
+    right: 18px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background-color: #0f172a;
+    background-color: #2563eb;
     color: #ffffff;
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
     z-index: 45;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
   }
 
   .mobile-fab:hover {
-    transform: scale(1.08);
-    background-color: #1e293b;
-  }
-
-  body.dark .mobile-fab {
-    background-color: #f8fafc;
-    color: #0f172a;
+    transform: scale(1.1);
+    background-color: #1d4ed8;
   }
 }

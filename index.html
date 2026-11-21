@@ -58,10 +58,10 @@
 
       <div class="sidebar-footer">
         <div class="user-card">
-          <div class="user-avatar">N</div>
+          <div class="user-avatar" id="sidebarUserAvatar">S</div>
           <div class="user-details">
-            <div class="user-name">Nivedh M</div>
-            <div class="user-status">CUSAT • Student</div>
+            <div class="user-name" id="sidebarUserName">Student Plan</div>
+            <div class="user-status" id="sidebarUserTagline">Student Edition</div>
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@
 
       <header class="header">
         <div class="header-greeting">
-          <h2 id="pageGreeting">Welcome, Nivedh</h2>
+          <h2 id="pageGreeting">Welcome back 👋</h2>
           <p id="pageSubGreeting">Student budget overview</p>
         </div>
 
@@ -95,7 +95,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Monthly Budget</span>
-                <i class="fa-solid fa-coins icon-muted"></i>
+                <div class="metric-icon-box blue">
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
               </div>
               <div class="metric-number" id="budgetDisplay">₹15,000</div>
               <div class="card-bottom">
@@ -107,7 +109,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Total Spent</span>
-                <i class="fa-solid fa-arrow-trend-up icon-muted"></i>
+                <div class="metric-icon-box amber">
+                  <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
               </div>
               <div class="metric-number" id="spentDisplay">₹0</div>
               <div class="card-bottom">
@@ -119,7 +123,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Remaining</span>
-                <i class="fa-solid fa-piggy-bank icon-muted"></i>
+                <div class="metric-icon-box green">
+                  <i class="fa-solid fa-piggy-bank"></i>
+                </div>
               </div>
               <div class="metric-number" id="remainingDisplay">₹15,000</div>
               <div class="card-bottom">
@@ -131,7 +137,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Savings Rate</span>
-                <i class="fa-solid fa-shield-halved icon-muted"></i>
+                <div class="metric-icon-box purple">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
               </div>
               <div class="metric-number" id="savingsDisplay">100%</div>
               <div class="progress-bar">
@@ -203,7 +211,11 @@
 
               <div class="form-group">
                 <label>Date</label>
-                <input class="input" id="expenseDate" type="date">
+                <input class="input date-picker" id="expenseDate" type="date">
+                <div class="chip-row">
+                  <button type="button" class="chip" onclick="setDatePreset('today')">Today</button>
+                  <button type="button" class="chip" onclick="setDatePreset('yesterday')">Yesterday</button>
+                </div>
               </div>
 
               <div class="form-group">
@@ -247,7 +259,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Total Spent</span>
-                <i class="fa-solid fa-wallet icon-muted"></i>
+                <div class="metric-icon-box amber">
+                  <i class="fa-solid fa-receipt"></i>
+                </div>
               </div>
               <div class="metric-number" id="reportSpent">₹0</div>
             </div>
@@ -255,7 +269,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Top Category</span>
-                <i class="fa-solid fa-fire icon-muted"></i>
+                <div class="metric-icon-box purple">
+                  <i class="fa-solid fa-fire"></i>
+                </div>
               </div>
               <div class="metric-number" id="topCategory" style="font-size: 20px;">None</div>
             </div>
@@ -263,7 +279,9 @@
             <div class="card">
               <div class="card-top">
                 <span class="card-label">Budget Health</span>
-                <i class="fa-solid fa-heart-pulse icon-muted"></i>
+                <div class="metric-icon-box green">
+                  <i class="fa-solid fa-heart-pulse"></i>
+                </div>
               </div>
               <div class="metric-number" id="budgetHealth" style="font-size: 20px;">Excellent</div>
               <div class="card-bottom">
@@ -299,6 +317,21 @@
 
             <div class="card">
               <div class="card-header">
+                <h3>Profile Settings</h3>
+              </div>
+              <div class="form-group">
+                <label>Your Name</label>
+                <input class="input" id="userNameInput" placeholder="Enter your name (e.g. Alex)">
+              </div>
+              <div class="form-group">
+                <label>College / Status Tagline</label>
+                <input class="input" id="userTaglineInput" placeholder="e.g. Student • Semester 4">
+              </div>
+              <button class="btn btn-primary" onclick="saveUserProfile()">Save Profile</button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
                 <h3>Monthly Budget Target</h3>
               </div>
               <div class="form-group">
@@ -313,19 +346,30 @@
               <button class="btn btn-primary" onclick="updateBudget()">Save Budget</button>
             </div>
 
+          </div>
+
+          <div class="grid-2" style="margin-top: 20px;">
+
             <div class="card">
               <div class="card-header">
                 <h3>Add New Category</h3>
               </div>
               <div class="form-group">
                 <label>Category Name</label>
-                <input class="input" id="newCategory" placeholder="e.g. Snacks, Travel, Books">
+                <input class="input" id="newCategory" placeholder="e.g. Gym, Snacks, Courses">
               </div>
               <div class="form-group">
                 <label>Allocation (%)</label>
                 <input class="input" id="newAllocation" type="number" placeholder="15">
               </div>
               <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Manage Categories</h3>
+              </div>
+              <div id="categoryManagerList" class="category-manage-list"></div>
             </div>
 
           </div>
@@ -339,7 +383,7 @@
 
           <div class="card card-danger" style="margin-top: 20px;">
             <div class="card-header">
-              <h3 style="color: #d32f2f;">Reset All Data</h3>
+              <h3 style="color: #dc2626;">Reset All Data</h3>
             </div>
             <div class="danger-row">
               <p>Permanently delete all expenses and restore default student categories.</p>
@@ -380,7 +424,11 @@
 
         <div class="form-group">
           <label>Date</label>
-          <input class="input" id="modalExpenseDate" type="date">
+          <input class="input date-picker" id="modalExpenseDate" type="date">
+          <div class="chip-row">
+            <button type="button" class="chip" onclick="setModalDatePreset('today')">Today</button>
+            <button type="button" class="chip" onclick="setModalDatePreset('yesterday')">Yesterday</button>
+          </div>
         </div>
 
         <div class="form-group">

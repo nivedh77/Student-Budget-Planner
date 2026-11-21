@@ -19,6 +19,10 @@ const DEFAULT_CATEGORIES = [
 let budget = 15000;
 let categories = [...DEFAULT_CATEGORIES];
 let expenses = [];
+let userProfile = {
+  name: '',
+  tagline: 'Student Edition'
+};
 
 // Safe reader for localStorage to avoid crashing on SecurityError or corrupted JSON
 function initStorage() {
@@ -59,6 +63,21 @@ function initStorage() {
     console.warn('Storage read failed for expenses:', err);
     expenses = [];
   }
+
+  try {
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      const parsedProf = JSON.parse(savedProfile);
+      if (parsedProf && typeof parsedProf === 'object') {
+        userProfile = {
+          name: parsedProf.name || '',
+          tagline: parsedProf.tagline || 'Student Edition'
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('Storage read failed for userProfile:', e);
+  }
 }
 
 initStorage();
@@ -69,8 +88,50 @@ function saveData() {
     localStorage.setItem('budget', String(budget));
     localStorage.setItem('categories', JSON.stringify(categories));
     localStorage.setItem('expenses', JSON.stringify(expenses));
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
   } catch (err) {
     console.warn('Storage save failed:', err);
+  }
+}
+
+// User Profile Customization
+function saveUserProfile() {
+  const nameInput = document.getElementById('userNameInput');
+  const taglineInput = document.getElementById('userTaglineInput');
+  if (!nameInput) return;
+
+  userProfile.name = nameInput.value.trim();
+  userProfile.tagline = taglineInput && taglineInput.value.trim() ? taglineInput.value.trim() : 'Student Edition';
+
+  saveData();
+  updateProfileDisplay();
+  showToast('Profile updated');
+}
+
+function updateProfileDisplay() {
+  const nameElem = document.getElementById('sidebarUserName');
+  const tagElem = document.getElementById('sidebarUserTagline');
+  const avatarElem = document.getElementById('sidebarUserAvatar');
+  const greetingElem = document.getElementById('pageGreeting');
+  const nameInput = document.getElementById('userNameInput');
+  const taglineInput = document.getElementById('userTaglineInput');
+
+  const displayName = userProfile.name || 'Student Plan';
+  const displayTagline = userProfile.tagline || 'Student Edition';
+  const initial = userProfile.name ? userProfile.name.charAt(0).toUpperCase() : 'S';
+
+  if (nameElem) nameElem.textContent = displayName;
+  if (tagElem) tagElem.textContent = displayTagline;
+  if (avatarElem) avatarElem.textContent = initial;
+  if (greetingElem) {
+    greetingElem.textContent = userProfile.name ? `Welcome, ${userProfile.name} 👋` : 'Welcome back 👋';
+  }
+
+  if (nameInput && !nameInput.value && userProfile.name) {
+    nameInput.value = userProfile.name;
+  }
+  if (taglineInput && !taglineInput.value && userProfile.tagline) {
+    taglineInput.value = userProfile.tagline;
   }
 }
 
@@ -81,33 +142,69 @@ function saveData() {
 const CATEGORY_MAP = {
   'Food': {
     icon: 'fa-solid fa-utensils',
-    color: 'var(--cat-food)'
+    color: '#ea580c',
+    bg: '#ffedd5'
   },
   'Transport': {
     icon: 'fa-solid fa-bus-simple',
-    color: 'var(--cat-transport)'
+    color: '#0284c7',
+    bg: '#e0f2fe'
   },
   'Shopping': {
     icon: 'fa-solid fa-bag-shopping',
-    color: 'var(--cat-shopping)'
+    color: '#db2777',
+    bg: '#fce7f3'
   },
   'Study': {
     icon: 'fa-solid fa-book-open',
-    color: 'var(--cat-study)'
+    color: '#16a34a',
+    bg: '#dcfce7'
   },
   'Entertainment': {
     icon: 'fa-solid fa-gamepad',
-    color: 'var(--cat-entertainment)'
+    color: '#9333ea',
+    bg: '#f3e8ff'
   }
 };
+
+const EXTRA_PALETTES = [
+  { color: '#2563eb', bg: '#dbeafe' },
+  { color: '#059669', bg: '#d1fae5' },
+  { color: '#d97706', bg: '#fef3c7' },
+  { color: '#7c3aed', bg: '#ede9fe' },
+  { color: '#dc2626', bg: '#fee2e2' },
+  { color: '#0891b2', bg: '#cffafe' },
+  { color: '#4f46e5', bg: '#e0e7ff' },
+  { color: '#c026d3', bg: '#fae8ff' }
+];
 
 function getCategoryMeta(categoryName) {
   if (categoryName && CATEGORY_MAP[categoryName]) {
     return CATEGORY_MAP[categoryName];
   }
+
+  const lower = (categoryName || '').toLowerCase();
+  let icon = 'fa-solid fa-tag';
+  if (lower.includes('coffee') || lower.includes('tea') || lower.includes('cafe')) icon = 'fa-solid fa-mug-hot';
+  else if (lower.includes('gym') || lower.includes('fitness') || lower.includes('health') || lower.includes('med')) icon = 'fa-solid fa-dumbbell';
+  else if (lower.includes('book') || lower.includes('course') || lower.includes('tuition')) icon = 'fa-solid fa-book-open';
+  else if (lower.includes('movie') || lower.includes('film') || lower.includes('game') || lower.includes('music')) icon = 'fa-solid fa-gamepad';
+  else if (lower.includes('rent') || lower.includes('room') || lower.includes('hostel')) icon = 'fa-solid fa-house';
+  else if (lower.includes('travel') || lower.includes('trip') || lower.includes('petrol') || lower.includes('fuel')) icon = 'fa-solid fa-car';
+  else if (lower.includes('tech') || lower.includes('code') || lower.includes('gadget') || lower.includes('phone')) icon = 'fa-solid fa-laptop';
+  else if (lower.includes('snack') || lower.includes('canteen')) icon = 'fa-solid fa-pizza-slice';
+
+  let hash = 0;
+  for (let i = 0; i < (categoryName || '').length; i++) {
+    hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const paletteIndex = Math.abs(hash) % EXTRA_PALETTES.length;
+  const chosen = EXTRA_PALETTES[paletteIndex];
+
   return {
-    icon: 'fa-solid fa-tag',
-    color: 'var(--text-secondary)'
+    icon: icon,
+    color: chosen.color,
+    bg: chosen.bg
   };
 }
 
@@ -294,6 +391,32 @@ function setBudgetPreset(val) {
   if (input) input.value = val;
 }
 
+function setDatePreset(preset) {
+  const input = document.getElementById('expenseDate');
+  if (!input) return;
+  const d = new Date();
+  if (preset === 'yesterday') {
+    d.setDate(d.getDate() - 1);
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  input.value = `${year}-${month}-${day}`;
+}
+
+function setModalDatePreset(preset) {
+  const input = document.getElementById('modalExpenseDate');
+  if (!input) return;
+  const d = new Date();
+  if (preset === 'yesterday') {
+    d.setDate(d.getDate() - 1);
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  input.value = `${year}-${month}-${day}`;
+}
+
 function submitModalExpense() {
   const amountInput = document.getElementById('modalExpenseAmount');
   const catInput = document.getElementById('modalExpenseCategory');
@@ -407,6 +530,57 @@ function addCategory() {
   nameInput.value = '';
   allocInput.value = '';
   showToast(`Category "${name}" added`);
+}
+
+function deleteCategory(index) {
+  if (index < 0 || index >= categories.length) return;
+  const catName = categories[index].name;
+
+  if (categories.length <= 1) {
+    showToast('You must keep at least 1 category');
+    return;
+  }
+
+  const confirmed = confirm(`Are you sure you want to delete category "${catName}"?`);
+  if (!confirmed) return;
+
+  categories.splice(index, 1);
+  saveData();
+  updateUI();
+  showToast(`Category "${catName}" removed`);
+}
+
+function renderCategoryManagerList() {
+  const container = document.getElementById('categoryManagerList');
+  if (!container) return;
+
+  container.innerHTML = '';
+  if (categories.length === 0) {
+    container.innerHTML = '<p class="text-muted" style="padding: 10px;">No categories configured.</p>';
+    return;
+  }
+
+  categories.forEach((cat, index) => {
+    const meta = getCategoryMeta(cat.name);
+    container.innerHTML += `
+      <div class="category-manage-item">
+        <div class="category-manage-left">
+          <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color}; width: 32px; height: 32px; font-size: 13px;">
+            <i class="${meta.icon}"></i>
+          </div>
+          <div>
+            <strong style="font-size: 13.5px;">${cat.name}</strong>
+            <span style="font-size: 12px; color: var(--text-tertiary); margin-left: 6px;">(${cat.allocation}%)</span>
+          </div>
+        </div>
+        <div>
+          <button class="btn-icon-subtle text-danger" onclick="deleteCategory(${index})" title="Delete Category">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  });
 }
 
 function updateAllocation(index, value) {
@@ -585,7 +759,7 @@ function renderExpenses() {
         recentContainer.innerHTML += `
           <div class="expense-item">
             <div class="expense-left">
-              <div class="category-icon-box">
+              <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
                 <i class="${meta.icon}"></i>
               </div>
               <div class="expense-meta">
@@ -652,7 +826,7 @@ function filterExpensesList() {
     container.innerHTML += `
       <div class="expense-item">
         <div class="expense-left">
-          <div class="category-icon-box">
+          <div class="category-icon-box" style="background-color: ${meta.bg}; color: ${meta.color};">
             <i class="${meta.icon}"></i>
           </div>
           <div class="expense-meta">
@@ -1009,6 +1183,10 @@ function resetAllData() {
   budget = 15000;
   categories = [...DEFAULT_CATEGORIES];
   expenses = [];
+  userProfile = {
+    name: '',
+    tagline: 'Student Edition'
+  };
 
   updateUI();
   showToast('All SPENDORA data has been reset to defaults');
@@ -1020,8 +1198,10 @@ function resetAllData() {
 
 function updateUI() {
   try {
+    updateProfileDisplay();
     renderCategoryOptions();
     renderCategories();
+    renderCategoryManagerList();
     renderExpenses();
     updateStats();
     saveData();
@@ -1044,11 +1224,15 @@ window.addExpense = addExpense;
 window.deleteExpense = deleteExpense;
 window.updateBudget = updateBudget;
 window.addCategory = addCategory;
+window.deleteCategory = deleteCategory;
 window.updateAllocation = updateAllocation;
 window.resetAllData = resetAllData;
 window.setQuickAmount = setQuickAmount;
 window.setModalQuickAmount = setModalQuickAmount;
 window.setBudgetPreset = setBudgetPreset;
+window.setDatePreset = setDatePreset;
+window.setModalDatePreset = setModalDatePreset;
+window.saveUserProfile = saveUserProfile;
 window.submitModalExpense = submitModalExpense;
 window.submitModalBudget = submitModalBudget;
 window.filterExpensesList = filterExpensesList;
