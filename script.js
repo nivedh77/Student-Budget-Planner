@@ -1,12 +1,8 @@
-/**
- * SPENDORA — Student Budget Planner
- * Professional Fintech Core Logic & State Management
- * Robust, bulletproof architecture with full exception handling.
- */
 
-// =============================================================================
-// STATE & SAFE STORAGE INITIALIZATION
-// =============================================================================
+
+
+
+
 
 const DEFAULT_CATEGORIES = [
   { name: 'Food', allocation: 30 },
@@ -24,7 +20,7 @@ let userProfile = {
   tagline: 'Student Edition'
 };
 
-// Safe reader for localStorage to avoid crashing on SecurityError or corrupted JSON
+
 function initStorage() {
   try {
     const savedBudget = localStorage.getItem('budget');
@@ -82,7 +78,7 @@ function initStorage() {
 
 initStorage();
 
-// Safe saver for localStorage
+
 function saveData() {
   try {
     localStorage.setItem('budget', String(budget));
@@ -94,7 +90,7 @@ function saveData() {
   }
 }
 
-// User Profile Customization
+
 function saveUserProfile() {
   const nameInput = document.getElementById('userNameInput');
   const taglineInput = document.getElementById('userTaglineInput');
@@ -135,9 +131,9 @@ function updateProfileDisplay() {
   }
 }
 
-// =============================================================================
-// CATEGORY VISUAL METADATA (Icons & Colors)
-// =============================================================================
+
+
+
 
 const CATEGORY_MAP = {
   'Food': {
@@ -208,12 +204,12 @@ function getCategoryMeta(categoryName) {
   };
 }
 
-// Currency Formatter
+
 function formatINR(amount) {
   return '₹' + Number(amount || 0).toLocaleString('en-IN');
 }
 
-// Format date into human-readable string
+
 function formatDateDisplay(dateString) {
   if (!dateString) return 'No Date';
   try {
@@ -230,7 +226,7 @@ function formatDateDisplay(dateString) {
   return dateString;
 }
 
-// Get Today's date in YYYY-MM-DD
+
 function getTodayDateString() {
   const now = new Date();
   const year = now.getFullYear();
@@ -239,9 +235,9 @@ function getTodayDateString() {
   return `${year}-${month}-${day}`;
 }
 
-// =============================================================================
-// NOTIFICATION & TOAST
-// =============================================================================
+
+
+
 
 function showToast(message) {
   try {
@@ -265,9 +261,9 @@ function showToast(message) {
   }
 }
 
-// =============================================================================
-// NAVIGATION & THEME CONTROLS
-// =============================================================================
+
+
+
 
 function openSection(id, element) {
   try {
@@ -277,12 +273,12 @@ function openSection(id, element) {
       targetSection.classList.add('active');
     }
 
-    // Update active status on both sidebar and mobile navigation items
+    
     document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(nav => {
       nav.classList.remove('active');
     });
 
-    // Highlight active tab across desktop and mobile matching the section
+    
     const sectionIndex = ['dashboard', 'expenses', 'reports', 'settings'].indexOf(id);
     if (sectionIndex !== -1) {
       const sidebarItems = document.querySelectorAll('.sidebar-nav .nav-item');
@@ -292,7 +288,7 @@ function openSection(id, element) {
       if (mobileItems[sectionIndex]) mobileItems[sectionIndex].classList.add('active');
     }
 
-    // If specific element passed, ensure it is active
+    
     if (element && element.classList) {
       element.classList.add('active');
     }
@@ -320,7 +316,7 @@ function toggleTheme() {
   }
 }
 
-// Restore saved theme on startup
+
 try {
   if (localStorage.getItem('theme') === 'dark') {
     document.body.classList.add('dark');
@@ -331,9 +327,9 @@ try {
   }
 } catch (e) {}
 
-// =============================================================================
-// MODALS LOGIC
-// =============================================================================
+
+
+
 
 function openAddModal() {
   const modal = document.getElementById('addExpenseModal');
@@ -469,9 +465,9 @@ function submitModalBudget() {
   showToast('Monthly budget updated');
 }
 
-// =============================================================================
-// CATEGORY CONTROLS
-// =============================================================================
+
+
+
 
 function renderCategoryOptions() {
   const selectExpense = document.getElementById('expenseCategory');
@@ -671,9 +667,9 @@ function renderCategories() {
   });
 }
 
-// =============================================================================
-// BUDGET MANAGEMENT
-// =============================================================================
+
+
+
 
 function updateBudget() {
   const input = document.getElementById('budgetInput');
@@ -692,9 +688,9 @@ function updateBudget() {
   showToast('Monthly budget updated');
 }
 
-// =============================================================================
-// EXPENSE MANAGEMENT
-// =============================================================================
+
+
+
 
 function addExpense() {
   const amountInput = document.getElementById('expenseAmount');
@@ -742,7 +738,7 @@ function deleteExpense(index) {
 function renderExpenses() {
   const recentContainer = document.getElementById('recentExpenses');
 
-  // 1. Render Recent Expenses on Dashboard (max 5)
+  
   if (recentContainer) {
     recentContainer.innerHTML = '';
     if (expenses.length === 0) {
@@ -783,11 +779,11 @@ function renderExpenses() {
     }
   }
 
-  // 2. Render Full List on Expenses Page
+  
   filterExpensesList();
 }
 
-// Filter and search on Expenses Page
+
 function filterExpensesList() {
   const container = document.getElementById('expenseList');
   if (!container) return;
@@ -849,7 +845,7 @@ function filterExpensesList() {
   });
 }
 
-// Export data to CSV
+
 function exportExpensesToCSV() {
   if (expenses.length === 0) {
     showToast('No expenses to export');
@@ -875,9 +871,9 @@ function exportExpensesToCSV() {
   showToast('Expenses exported as CSV');
 }
 
-// =============================================================================
-// STATS & METRICS ENGINE
-// =============================================================================
+
+
+
 
 function updateStats() {
   try {
@@ -886,7 +882,7 @@ function updateStats() {
     const savingsRate = budget > 0 ? Math.max(0, Math.round((remaining / budget) * 100)) : 0;
     const spentRate = budget > 0 ? Math.round((totalSpent / budget) * 100) : 0;
 
-    // 1. Dashboard Values
+    
     const budgetElem = document.getElementById('budgetDisplay');
     const spentElem = document.getElementById('spentDisplay');
     const remainingElem = document.getElementById('remainingDisplay');
@@ -903,7 +899,7 @@ function updateStats() {
       savingsBar.className = `progress-fill ${savingsRate > 50 ? 'success' : savingsRate > 20 ? 'warning' : 'danger'}`;
     }
 
-    // 2. Spent Badge & Burn Rate
+    
     const spentBadge = document.getElementById('spentPercentageBadge');
     if (spentBadge) {
       spentBadge.innerText = `${spentRate}% of limit`;
@@ -918,7 +914,7 @@ function updateStats() {
     const burnRateElem = document.getElementById('dailyBurnRate');
     if (burnRateElem) burnRateElem.innerText = `~${formatINR(dailyBurn)}/day`;
 
-    // 3. Remaining Status Badge
+    
     const remBadge = document.getElementById('remainingStatusBadge');
     if (remBadge) {
       if (remaining < 0) {
@@ -933,11 +929,11 @@ function updateStats() {
       }
     }
 
-    // 4. Reports Tab Metrics
+    
     const reportSpent = document.getElementById('reportSpent');
     if (reportSpent) reportSpent.innerText = formatINR(totalSpent);
 
-    // Top Category Calculation
+    
     let topCategoryName = 'None';
     const categoryTotals = {};
 
@@ -958,7 +954,7 @@ function updateStats() {
         : 'None';
     }
 
-    // Budget Health Status
+    
     let healthScore = 'Excellent';
     let healthClass = 'positive';
 
@@ -989,9 +985,9 @@ function updateStats() {
   }
 }
 
-// =============================================================================
-// SMART STUDENT ADVICE & INSIGHTS
-// =============================================================================
+
+
+
 
 function renderSuggestions(spent, remaining, dailyBurn, daysLeft, topCat) {
   const container = document.getElementById('suggestions');
@@ -1050,7 +1046,7 @@ function renderSuggestions(spent, remaining, dailyBurn, daysLeft, topCat) {
   });
 }
 
-// Notifications feed in Settings
+
 function renderNotifications(spent) {
   const container = document.getElementById('notifications');
   if (!container) return;
@@ -1104,7 +1100,7 @@ function renderNotifications(spent) {
   });
 }
 
-// Analytics Tab Visual Breakdown
+
 function renderAnalyticsBreakdown(totalSpent, categoryTotals) {
   const barsContainer = document.getElementById('analyticsCategoryBars');
   const adviceBody = document.getElementById('analyticsAdviceBody');
@@ -1165,9 +1161,9 @@ function renderAnalyticsBreakdown(totalSpent, categoryTotals) {
   }
 }
 
-// =============================================================================
-// RESET DATA CONTROLLER
-// =============================================================================
+
+
+
 
 function resetAllData() {
   const confirmFirst = confirm('Are you sure you want to completely reset SPENDORA data?');
@@ -1192,9 +1188,9 @@ function resetAllData() {
   showToast('All SPENDORA data has been reset to defaults');
 }
 
-// =============================================================================
-// GLOBAL REFRESH ENGINE
-// =============================================================================
+
+
+
 
 function updateUI() {
   try {
@@ -1210,10 +1206,10 @@ function updateUI() {
   }
 }
 
-// =============================================================================
-// EXPLICIT GLOBAL WINDOW BINDINGS
-// Ensures all handlers are reachable by inline onclick attributes in any environment
-// =============================================================================
+
+
+
+
 
 window.openSection = openSection;
 window.openAddModal = openAddModal;
@@ -1239,18 +1235,18 @@ window.filterExpensesList = filterExpensesList;
 window.exportExpensesToCSV = exportExpensesToCSV;
 window.toggleTheme = toggleTheme;
 
-// =============================================================================
-// DOM READY & EVENT ATTACHMENT
-// =============================================================================
+
+
+
 
 function attachEventListeners() {
-  // Theme toggle button
+  
   const themeBtn = document.getElementById('themeToggle');
   if (themeBtn) {
     themeBtn.onclick = toggleTheme;
   }
 
-  // Set default expense date
+  
   const expenseDateInput = document.getElementById('expenseDate');
   if (expenseDateInput && !expenseDateInput.value) {
     expenseDateInput.value = getTodayDateString();
